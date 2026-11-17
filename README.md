@@ -153,7 +153,7 @@ The portfolio is structured for static deployment on any modern platform:
 2. **GitHub Pages:**
    - Go to your repository settings on GitHub.
    - Under **Pages**, select the `master` or `main` branch and folder `/ (root)`.
-   - Save to publish at `https://<username>.github.io/<repo>/`.
+   - Save to publish at `https://github.com/Jayant052005/Jayant-kumar-sharma-dev-portfolio`.
 
 ---
 
