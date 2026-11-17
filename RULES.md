@@ -29,8 +29,8 @@ These rules apply to every change made to this portfolio.
 -   Use semantic HTML elements.
 -   Use clear, descriptive class and variable names.
 -   Keep HTML, CSS, and JavaScript separate.
--   Avoid inline styles and inline event handlers unless there is a
-    specific reason.
+-   STRICT: Never use inline styles (`style="..."`). All styling must reside in external CSS files using semantic class names.
+-   Avoid inline event handlers.
 -   Keep functions small and focused.
 -   Avoid duplicated CSS and JavaScript.
 -   Add comments for non-obvious logic, not for every line.

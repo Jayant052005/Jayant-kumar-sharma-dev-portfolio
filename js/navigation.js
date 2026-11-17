@@ -60,3 +60,4 @@ export function initNavigation() {
     sections.forEach(section => sectionObserver.observe(section));
   }
 }
+

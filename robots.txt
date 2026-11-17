@@ -3,3 +3,4 @@ Allow: /
 
 # Sitemap placeholder (will point to domain when deployed)
 # Sitemap: https://example.com/sitemap.xml
+

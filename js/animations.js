@@ -30,3 +30,4 @@ export function initAnimations() {
 
   revealElements.forEach(el => revealObserver.observe(el));
 }
+

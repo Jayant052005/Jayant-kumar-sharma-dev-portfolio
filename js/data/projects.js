@@ -60,3 +60,4 @@ export const projects = [
     featured: true
   }
 ];
+

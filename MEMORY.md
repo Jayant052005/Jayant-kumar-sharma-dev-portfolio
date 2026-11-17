@@ -29,6 +29,7 @@ placeholders as facts.
 -   Lucide icons and Google Fonts are optional supporting resources.
 -   Git/GitHub for version control.
 -   Vercel for static deployment.
+-   STRICT GLOBAL RULE: Absolutely no inline styles (`style="..."`). All styling must reside in external CSS files with clean, reusable utility/component classes.
 -   No React, no Tailwind, no database, and no custom backend in the
     initial version.
 

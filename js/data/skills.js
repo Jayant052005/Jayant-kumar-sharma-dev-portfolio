@@ -25,3 +25,4 @@ export const skillsData = [
     skills: ["Git & GitHub", "VS Code", "Vercel", "Postman", "Linux Basics"]
   }
 ];
+
