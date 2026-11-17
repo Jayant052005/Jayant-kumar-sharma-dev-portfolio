@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Animations & Motion System
+   Modern Editorial Developer Portfolio
+   ========================================================================== */
+
+/* Keyframe Animations */
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroMotifScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes accentPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+/* Hero Entrance Animations (Page Load) */
+.hero-enter-1 {
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-2 {
+  opacity: 0;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-3 {
+  opacity: 0;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-motif {
+  opacity: 0;
+  animation: heroMotifScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  will-change: opacity, transform;
+}
+
+/* Intersection Observer Scroll Reveal */
+/* Default: 100% visible so content is NEVER hidden if JS is loading or on file:// protocol */
+.reveal-init {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Progressive enhancement: active only after JavaScript confirms support */
+html.js-reveal .reveal-init {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+html.js-reveal .reveal-init.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered Grid Item Delays */
+.reveal-init:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+.reveal-init:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+.reveal-init:nth-child(4) {
+  transition-delay: 0.24s;
+}
+
+.reveal-init:nth-child(5) {
+  transition-delay: 0.32s;
+}
+
+/* Hover & Focus Interactions */
+.card-interactive {
+  transition: transform var(--transition-fast),
+              border-color var(--transition-base),
+              box-shadow var(--transition-base);
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-border-light);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   Accessibility: Reduced Motion Preference
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero-enter-1,
+  .hero-enter-2,
+  .hero-enter-3,
+  .hero-enter-motif,
+  .reveal-init {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

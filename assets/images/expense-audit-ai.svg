@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="grad-ai" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161616"/>
+      <stop offset="100%" stop-color="#0c0c0c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#grad-ai)"/>
+  <rect x="2" y="2" width="796" height="446" fill="none" stroke="#262626" stroke-width="2"/>
+
+  <!-- Top bar -->
+  <rect x="40" y="30" width="720" height="44" rx="4" fill="#141414" stroke="#292929"/>
+  <circle cx="64" cy="52" r="5" fill="#E5252A"/>
+  <circle cx="80" cy="52" r="5" fill="#444444"/>
+  <circle cx="96" cy="52" r="5" fill="#444444"/>
+  <text x="120" y="57" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#888888" letter-spacing="1">EXPENSE AUDIT AI // ANOMALY DETECTION ENGINE</text>
+  <rect x="630" y="42" width="110" height="20" rx="3" fill="#1f1f1f" stroke="#E5252A"/>
+  <text x="685" y="56" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#E5252A" text-anchor="middle">LIVE INFERENCE</text>
+
+  <!-- Metric Badges -->
+  <rect x="40" y="90" width="220" height="85" rx="4" fill="#131313" stroke="#242424"/>
+  <text x="56" y="114" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#888888" letter-spacing="1">INVOICES PROCESSED</text>
+  <text x="56" y="152" font-family="'Bebas Neue', 'Impact', sans-serif" font-size="36" fill="#F5F5F5">14,820</text>
+  <text x="170" y="150" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#E5252A">+18% today</text>
+
+  <rect x="290" y="90" width="220" height="85" rx="4" fill="#131313" stroke="#242424"/>
+  <text x="306" y="114" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#888888" letter-spacing="1">DISCREPANCIES DETECTED</text>
+  <text x="306" y="152" font-family="'Bebas Neue', 'Impact', sans-serif" font-size="36" fill="#E5252A">342</text>
+  <text x="390" y="150" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#888888">Flagged High</text>
+
+  <rect x="540" y="90" width="220" height="85" rx="4" fill="#131313" stroke="#242424"/>
+  <text x="556" y="114" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#888888" letter-spacing="1">MODEL CONFIDENCE</text>
+  <text x="556" y="152" font-family="'Bebas Neue', 'Impact', sans-serif" font-size="36" fill="#FFFFFF">99.4%</text>
+  <text x="650" y="150" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#44AA44">Optimal</text>
+
+  <!-- Live Invoice Scan & Extraction Display -->
+  <rect x="40" y="195" width="440" height="215" rx="4" fill="#131313" stroke="#242424"/>
+  <text x="60" y="225" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">NEURAL PARSER STREAM</text>
+  <line x1="60" y1="240" x2="460" y2="240" stroke="#222222" stroke-width="1"/>
+
+  <rect x="60" y="255" width="400" height="34" rx="3" fill="#1a1a1a" stroke="#E5252A"/>
+  <text x="75" y="276" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#E5252A">INV-2026-9042 // DUPLICATE CLAIM DETECTED</text>
+  <text x="445" y="276" font-family="'Inter', sans-serif" font-size="10" fill="#AAAAAA" text-anchor="end">Risk: 94%</text>
+
+  <rect x="60" y="300" width="400" height="34" rx="3" fill="#161616"/>
+  <text x="75" y="321" font-family="'Inter', sans-serif" font-size="11" fill="#CCCCCC">INV-2026-9041 // Hotel Stay • Out-of-Policy Limit</text>
+  <text x="445" y="321" font-family="'Inter', sans-serif" font-size="10" fill="#AAAAAA" text-anchor="end">Risk: 61%</text>
+
+  <rect x="60" y="345" width="400" height="34" rx="3" fill="#161616"/>
+  <text x="75" y="366" font-family="'Inter', sans-serif" font-size="11" fill="#777777">INV-2026-9040 // Cloud Infrastructure Usage</text>
+  <text x="445" y="366" font-family="'Inter', sans-serif" font-size="10" fill="#44AA44" text-anchor="end">Verified</text>
+
+  <!-- Right Anomaly Radar Box -->
+  <rect x="500" y="195" width="260" height="215" rx="4" fill="#131313" stroke="#242424"/>
+  <text x="520" y="225" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">AUDIT PIPELINE</text>
+  <circle cx="630" cy="310" r="60" fill="none" stroke="#282828" stroke-width="1"/>
+  <circle cx="630" cy="310" r="40" fill="none" stroke="#333333" stroke-width="1"/>
+  <circle cx="630" cy="310" r="20" fill="none" stroke="#E5252A" stroke-width="1.5"/>
+  <line x1="630" y1="240" x2="630" y2="380" stroke="#222222"/>
+  <line x1="560" y1="310" x2="700" y2="310" stroke="#222222"/>
+  <circle cx="645" cy="295" r="4" fill="#E5252A"/>
+  <circle cx="610" cy="325" r="3" fill="#E5252A"/>
+  <text x="630" y="395" font-family="'Inter', sans-serif" font-size="10" fill="#888888" text-anchor="middle">Anomaly Vector Space</text>
+</svg>
+
