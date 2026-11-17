@@ -52,16 +52,5 @@ export const projects = [
     statusText: "Interactive Dashboard",
     featured: true
   },
-  {
-    id: "civicconnect",
-    title: "CivicConnect",
-    category: "Hyperlocal Civic Issue Platform",
-    description: "A localized municipal issue management system allowing citizens to capture, geo-tag, and report neighborhood infrastructure repairs while providing municipal administrators with a triage resolution pipeline.",
-    technologies: ["JavaScript", "Geolocation API", "Node.js", "PostgreSQL"],
-    liveUrl: "#contact",
-    sourceUrl: "https://github.com",
-    image: "assets/images/civicconnect.svg",
-    statusText: "Active Community Pilot",
-    featured: true
-  }
+
 ];
