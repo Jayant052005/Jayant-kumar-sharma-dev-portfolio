@@ -9,6 +9,9 @@ export function initAnimations() {
     return;
   }
 
+  // Progressive enhancement: activate scroll-reveal CSS rules only when JS is confirmed
+  document.documentElement.classList.add('js-reveal');
+
   const revealElements = document.querySelectorAll('.reveal-init');
   if (!('IntersectionObserver' in window) || revealElements.length === 0) {
     revealElements.forEach(el => el.classList.add('reveal-visible'));

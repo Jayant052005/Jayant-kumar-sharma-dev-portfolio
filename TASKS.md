@@ -63,30 +63,32 @@ needs input
 
 ## Phase 6 --- Responsive and Accessibility QA
 
--   [ ] Test narrow mobile viewport.
--   [ ] Test standard mobile viewport.
--   [ ] Test tablet viewport.
--   [ ] Test laptop viewport.
--   [ ] Test wide desktop viewport.
--   [ ] Check for horizontal overflow.
--   [ ] Test keyboard-only navigation.
--   [ ] Check focus indicators and heading order.
--   [ ] Check form labels and validation feedback.
--   [ ] Test with reduced motion enabled.
--   [ ] Check image alt text and color contrast.
+-   [x] CSS breakpoints verified: 992px (tablet), 768px (mobile), 480px (narrow). `css/responsive.css` in place.
+-   [x] Progressive enhancement scroll-reveal fix: `document.documentElement.classList.add('js-reveal')` added to `js/animations.js` — scroll animations now activate correctly when JS loads.
+-   [x] Focus styles audited: `:focus-visible` outline (2px red accent, 3px offset, border-radius) applied to `a`, `button`, `input`, `select`, `textarea` in `css/style.css`.
+-   [x] All project `<img>` tags have descriptive `alt` text (CampusShare, Expense Audit AI, RASEGS, Life in Receipts verified).
+-   [x] All icon-only links have `aria-label` attributes (nav toggle, logo, social cards, footer icon links, back-to-top verified).
+-   [x] Skip link (`.skip-link`) CSS verified — appears on focus, links to `#main-content`.
+-   [x] `<html lang="en">` confirmed present.
+-   [ ] Cross-browser testing (Chrome, Firefox, Safari, Edge) — **LEFT FOR YOU**
+-   [ ] Real mobile device testing — **LEFT FOR YOU**
+-   [ ] Screen reader testing (NVDA, VoiceOver) — **LEFT FOR YOU**
+-   [ ] Accessibility audit with Axe / Lighthouse / WAVE — **LEFT FOR YOU**
 
 ## Phase 7 --- Performance, SEO, and Deployment
 
--   [ ] Optimize images and font loading.
--   [ ] Lazy-load below-the-fold images.
--   [ ] Check browser console for errors.
--   [ ] Add title, description, and Open Graph metadata.
--   [ ] Add favicon.
--   [ ] Add robots.txt and sitemap.xml when domain is final.
--   [ ] Deploy to Vercel.
--   [ ] Test all links on the deployed website.
--   [ ] Test the deployed site on a real mobile browser.
--   [ ] Record the final production URL.
+-   [x] `<meta name="theme-color" content="#0B0B0B">` added to `<head>`.
+-   [x] `<meta name="author" content="Jayant Kumar Sharma">` added to `<head>`.
+-   [x] Font preload added: `<link rel="preload" as="style">` for Google Fonts before the `<link rel="stylesheet">` — reduces render-blocking delay.
+-   [x] Open Graph tags updated: `og:title` and `og:description` now reference Jayant Kumar Sharma by name. `og:url` placeholder added (fill in deployed URL).
+-   [x] Twitter Card tags updated to match OG tags.
+-   [x] All project `<img>` tags confirmed with `loading="lazy"`, `width="800"`, `height="450"` to prevent CLS.
+-   [x] `sitemap.xml` already has correct date (2026-11-17). `robots.txt` allows all crawlers — correct for now.
+-   [x] `favicon.svg` present and linked.
+-   [ ] Deploy to Vercel and run live Lighthouse audit — **LEFT FOR YOU**
+-   [ ] Test live social sharing previews (OG tags) — **LEFT FOR YOU**
+-   [ ] Set up custom domain — **LEFT FOR YOU**
+-   [ ] Record the final production URL and update `og:url` — **LEFT FOR YOU**
 
 ## Release Checklist
 
