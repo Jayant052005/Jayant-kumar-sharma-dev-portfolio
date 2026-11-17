@@ -62,7 +62,14 @@
 }
 
 /* Intersection Observer Scroll Reveal */
+/* Default: 100% visible so content is NEVER hidden if JS is loading or on file:// protocol */
 .reveal-init {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Progressive enhancement: active only after JavaScript confirms support */
+html.js-reveal .reveal-init {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
@@ -70,7 +77,7 @@
   will-change: opacity, transform;
 }
 
-.reveal-visible {
+html.js-reveal .reveal-init.reveal-visible {
   opacity: 1;
   transform: translateY(0);
 }
