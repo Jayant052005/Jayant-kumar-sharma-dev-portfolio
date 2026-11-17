@@ -19,27 +19,27 @@ needs input
 
 ## Phase 2 --- Core Layout
 
--   [ ] Build semantic page landmarks.
--   [ ] Build desktop navigation.
--   [ ] Build accessible mobile navigation.
--   [ ] Build hero section and CTA links.
--   [ ] Add section dividers and consistent container widths.
--   [ ] Build footer and back-to-top link.
+-   [x] Build semantic page landmarks.
+-   [x] Build desktop navigation.
+-   [x] Build accessible mobile navigation.
+-   [x] Build hero section and CTA links.
+-   [x] Add section dividers and consistent container widths.
+-   [x] Build footer and back-to-top link.
 
 ## Phase 3 --- Portfolio Content
 
--   [ ] Confirm the final professional headline and introduction.
--   [ ] Verify project descriptions and personal contributions.
+-   [x] Confirm the final professional headline and introduction.
+-   [x] Verify project descriptions and personal contributions.
 -   [ ] Collect genuine project screenshots.
 -   [ ] Verify each live demo URL.
 -   [ ] Verify each source repository URL.
--   [ ] Build featured project cards.
--   [ ] Build What I Build capability cards.
--   [ ] Add verified technology skills grouped by category.
--   [ ] Add About / development philosophy content.
--   [ ] Add verified education, experience, and achievements.
--   [ ] Add resume file and test its download link.
--   [ ] Add verified email and professional social links.
+-   [x] Build featured project cards.
+-   [x] Build What I Build capability cards.
+-   [x] Add verified technology skills grouped by category.
+-   [x] Add About / development philosophy content.
+-   [x] Add verified education, experience, and achievements.
+-   [x] Add resume file and test its download link.
+-   [x] Add verified email and professional social links.
 
 ## Phase 4 --- Contact
 
