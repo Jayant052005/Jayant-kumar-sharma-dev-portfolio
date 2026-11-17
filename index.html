@@ -73,7 +73,8 @@
   </header>
 
   <!-- Main Content Landmark -->
-  <main id="main-content">
+  <!-- tabindex="-1" allows the skip link to programmatically focus this element in all browsers -->
+  <main id="main-content" tabindex="-1">
     <!-- Hero Section -->
     <section id="hero" class="section hero-section">
       <div class="container">
@@ -939,7 +940,7 @@
 
               <button type="submit" class="btn btn-primary">Send Message</button>
 
-              <div id="form-status" class="form-status" aria-live="polite"></div>
+              <div id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true"></div>
             </form>
           </div>
         </div>

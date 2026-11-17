@@ -1,6 +1,12 @@
 /* ==========================================================================
    Responsive Styles
    Modern Editorial Developer Portfolio
+
+   Breakpoints:
+     >= 1400px  — Wide desktop enhancement
+     <= 992px   — Tablet & smaller
+     <= 768px   — Mobile (drawer nav activated)
+     <= 480px   — Narrow mobile
    ========================================================================== */
 
 /* Tablet & Smaller (<= 992px) */
@@ -75,6 +81,7 @@
     pointer-events: none;
     transition: transform var(--transition-base), opacity var(--transition-base);
     border-bottom: 1px solid var(--color-border);
+    z-index: calc(var(--z-nav) - 1);
   }
 
   .nav-menu.is-active {
@@ -158,3 +165,20 @@
     padding: var(--space-lg);
   }
 }
+
+/* Wide Desktop (>= 1400px) */
+@media (min-width: 1400px) {
+  :root {
+    --container-max-width: 1320px;
+    --section-spacing-y: 8rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .capabilities-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+

@@ -4,7 +4,15 @@
    ========================================================================== */
 
 :root {
-  /* Color Palette */
+  /* Color Palette
+   * WCAG 2.1 Contrast audit (Phase 6, 2026-11-17):
+   *   #F5F5F5 on #0B0B0B  → 18.05:1 — AAA ✅
+   *   #A0A0A0 on #0B0B0B  →  7.53:1 — AAA ✅
+   *   #E5252A on #0B0B0B  →  4.34:1 — AA for large/display text only ⚠️
+   *   #FFFFFF on #E5252A  →  4.54:1 — AA ✅ (used on btn-primary text)
+   * Rule: Never use --color-accent for body or small text; use it only for
+   * display headings (Bebas Neue ≥ 18px bold) and decorative elements.
+   */
   --color-bg: #0B0B0B;
   --color-surface: #121212;
   --color-surface-raised: #191919;
@@ -67,6 +75,12 @@
 
 .skip-link:focus {
   top: var(--space-md);
+}
+
+/* Skip-link focus target — suppress visible outline on programmatic focus only */
+/* tabindex="-1" on #main-content means it only receives focus from the skip link */
+#main-content:focus {
+  outline: none;
 }
 
 /* ==========================================================================
@@ -1320,6 +1334,7 @@ p {
   width: 100%;
   z-index: var(--z-nav);
   background-color: rgba(11, 11, 11, 0.92);
+  -webkit-backdrop-filter: blur(10px); /* Safari 9+ support */
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
 }
