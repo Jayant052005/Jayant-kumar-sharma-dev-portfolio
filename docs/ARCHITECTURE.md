@@ -83,16 +83,17 @@ a specific requirement justifies them.
 my-portfolio/
 |
 +-- index.html
-+-- README.md
-+-- PRD.md
-+-- ARCHITECTURE.md
-+-- RULES.md
-+-- DESIGN.md
-+-- TASKS.md
-+-- MEMORY.md
++-- docs/
+|   +-- ARCHITECTURE.md
+|   +-- DESIGN.md
+|   +-- MEMORY.md
+|   +-- PRD.md
+|   +-- RULES.md
+|   +-- TASKS.md
 |
 +-- assets/
 |   +-- images/
+|   |   +-- favicon.svg
 |   +-- icons/
 |   +-- resume.pdf
 |
@@ -110,7 +111,6 @@ my-portfolio/
 |       +-- projects.js
 |       +-- skills.js
 |
-+-- favicon.svg
 +-- robots.txt
 +-- sitemap.xml
 ```
