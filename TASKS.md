@@ -30,9 +30,9 @@ needs input
 
 -   [x] Confirm the final professional headline and introduction.
 -   [x] Verify project descriptions and personal contributions.
--   [ ] Collect genuine project screenshots.
--   [ ] Verify each live demo URL.
--   [ ] Verify each source repository URL.
+-   [x] Collect genuine project screenshots.
+-   [x] Verify each live demo URL.
+-   [x] Verify each source repository URL.
 -   [x] Build featured project cards.
 -   [x] Build What I Build capability cards.
 -   [x] Add verified technology skills grouped by category.
