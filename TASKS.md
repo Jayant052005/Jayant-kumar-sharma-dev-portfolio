@@ -63,46 +63,32 @@ needs input
 
 ## Phase 6 --- Responsive and Accessibility QA
 
--   [x] CSS breakpoints verified: 992px (tablet), 768px (mobile), 480px (narrow). `css/responsive.css` in place.
--   [x] Wide desktop breakpoint (≥1400px) added to `responsive.css` — wider container + 2-col project grid.
--   [x] Progressive enhancement scroll-reveal fix: `document.documentElement.classList.add('js-reveal')` added to `js/animations.js`.
--   [x] Focus styles audited: `:focus-visible` outline (2px red accent, 3px offset, `border-radius`) applied to `a`, `button`, `input`, `select`, `textarea`.
--   [x] Skip link target fixed: `tabindex="-1"` added to `<main id="main-content">` — skip link now works in all browsers (Chrome, Firefox, Safari, Edge).
--   [x] `#main-content:focus { outline: none }` added — suppresses ugly blue box when skip link sends focus there.
--   [x] Mobile nav `aria-hidden` toggle added in `navigation.js`: `aria-hidden="true"` when closed, `"false"` when open — screen readers now correctly ignore closed menu.
--   [x] Mobile nav `focusout` handler added — closes menu when Tab moves focus outside nav (keyboard users).
--   [x] Mobile nav `z-index` set to `calc(var(--z-nav) - 1)` in `responsive.css` — drawer covers all content correctly.
--   [x] Form status region upgraded: `role="status"` + `aria-live="polite"` + `aria-atomic="true"` — screen readers announce submission results correctly.
--   [x] `-webkit-backdrop-filter` vendor prefix added for Safari 9–15 nav blur support.
--   [x] All project `<img>` tags have descriptive `alt` text.
--   [x] All icon-only links have `aria-label` (nav toggle, logo, social cards, footer icons, back-to-top).
--   [x] `<html lang="en">` confirmed present.
--   [x] Color contrast audit documented in CSS comments:
-      - #F5F5F5 on #0B0B0B → 18.05:1 AAA ✅
-      - #A0A0A0 on #0B0B0B → 7.53:1 AAA ✅
-      - #E5252A on dark → 4.34:1 — AA for large/display text ⚠️ (rule added: never use accent for body/small text)
-      - White on #E5252A → 4.54:1 AA ✅ (btn-primary)
--   [x] Responsive CSS breakpoint comment header added with all breakpoints documented.
--   [x] `prefers-reduced-motion` verified: CSS kills all animations; JS skips IntersectionObserver setup.
--   [x] Cross-browser CSS compatibility: `-webkit-backdrop-filter` added; standard CSS Grid/Flex used throughout; no non-standard properties.
--   [x] Keyboard navigation: Escape closes mobile nav + returns focus ✅; all links/buttons in natural DOM tab order ✅; focus indicators visible on all interactive elements ✅.
--   [x] Screen reader compatibility: proper landmark regions (`header`, `main`, `nav`, `footer`, `section`); `aria-live` regions on form feedback; `aria-hidden` on decorative elements; `aria-label` on icon-only links; `aria-expanded` + `aria-controls` on nav toggle; form inputs all have `<label for>`.
--   [x] Horizontal overflow prevention: `overflow-x: hidden` on `body` already set in `style.css` ✅.
+-   [x] Verify narrow mobile viewport (<= 480px) layouts and full-width actions.
+-   [x] Verify standard mobile viewport (<= 768px) and accessible drawer navigation.
+-   [x] Verify tablet viewport (<= 992px) grid collapses and spacing tokens.
+-   [x] Verify laptop and standard desktop viewports for clean layout flow.
+-   [x] Add wide desktop breakpoint (>= 1400px) with expanded container scaling.
+-   [x] Check for horizontal overflow and enforce body containment.
+-   [x] Test keyboard-only navigation, skip link focus target, and escape key handlers.
+-   [x] Audit visible focus indicators across all interactive elements.
+-   [x] Audit form labels, ARIA live regions, and real-time validation feedback.
+-   [x] Verify reduced-motion support across CSS keyframes and IntersectionObserver.
+-   [x] Audit image alt text, icon aria-labels, and WCAG 2.1 color contrast ratios.
+-   [x] Verify cross-browser CSS compatibility and vendor prefixes.
 
 ## Phase 7 --- Performance, SEO, and Deployment
 
--   [x] `<meta name="theme-color" content="#0B0B0B">` added to `<head>`.
--   [x] `<meta name="author" content="Jayant Kumar Sharma">` added to `<head>`.
--   [x] Font preload added: `<link rel="preload" as="style">` for Google Fonts before the `<link rel="stylesheet">` — reduces render-blocking delay.
--   [x] Open Graph tags updated: `og:title` and `og:description` now reference Jayant Kumar Sharma by name. `og:url` placeholder added (fill in deployed URL).
--   [x] Twitter Card tags updated to match OG tags.
--   [x] All project `<img>` tags confirmed with `loading="lazy"`, `width="800"`, `height="450"` to prevent CLS.
--   [x] `sitemap.xml` already has correct date (2026-11-17). `robots.txt` allows all crawlers — correct for now.
--   [x] `favicon.svg` present and linked.
--   [ ] Deploy to Vercel and run live Lighthouse audit — **LEFT FOR YOU**
--   [ ] Test live social sharing previews (OG tags) — **LEFT FOR YOU**
--   [ ] Set up custom domain — **LEFT FOR YOU**
--   [ ] Record the final production URL and update `og:url` — **LEFT FOR YOU**
+-   [x] Optimize font loading with preconnect and preload resource hints.
+-   [x] Lazy-load below-the-fold images and set explicit dimensions to prevent CLS.
+-   [x] Audit browser console and script execution to ensure zero errors.
+-   [x] Add page title, description, author, and theme-color metadata.
+-   [x] Configure Open Graph and Twitter Card social sharing tags.
+-   [x] Add SVG favicon and verify browser tab display.
+-   [x] Verify sitemap.xml dates and configure robots.txt crawl directives.
+-   [ ] Deploy to Vercel and verify production build.
+-   [ ] Run live Lighthouse audit on deployed website.
+-   [ ] Test live social sharing previews across platforms.
+-   [ ] Configure custom domain and record the final production URL.
 
 ## Release Checklist
 
