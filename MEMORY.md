@@ -76,14 +76,17 @@ Do not assume every project is complete, public, or deployed.
 
 ## 6. Owner Context Relevant to This Project
 
--   The owner is a BTech student learning backend and full-stack
-    development.
--   The owner prefers beginner-friendly, practical explanations.
--   The owner prefers a small technology stack and wants to understand
-    the code.
+-   **Owner Name:** Jayant Kumar Sharma
+-   **Role:** Backend & Full-Stack Developer
+-   **Education:** Bachelor of Technology (B.Tech)
+-   **Location:** Jamshedpur, Jharkhand, India
+-   **Status:** Student & Developer
+-   **GitHub:** https://github.com/Jayant052005
+-   **Professional Headline:** "BUILDING DIGITAL SOLUTIONS. EXPLORING POSSIBILITIES. CREATING IMPACT."
+-   The owner prefers a small technology stack (HTML5, CSS3, Vanilla JavaScript) and wants to understand the code.
 -   The owner uses VS Code on Windows.
--   Existing project structure and working features should be preserved
-    when modifying an existing codebase.
+-   STRICT: Never use inline styles (`style="..."`).
+-   Existing project structure and working features should be preserved when modifying the codebase.
 
 ## 7. Unconfirmed Details
 
