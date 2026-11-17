@@ -1,23 +1,13 @@
 /* ==========================================================================
-   Animations & Motion
+   Animations & Motion System
    Modern Editorial Developer Portfolio
    ========================================================================== */
 
-/* Fade In Keyframes */
-@keyframes fadeIn {
+/* Keyframe Animations */
+@keyframes heroFadeIn {
   from {
     opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Slide Up Fade In Keyframes */
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -25,24 +15,58 @@
   }
 }
 
-/* Subtle Accent Pulse */
+@keyframes heroMotifScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes accentPulse {
   0%, 100% {
     transform: scale(1);
     opacity: 0.9;
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.04);
     opacity: 1;
   }
 }
 
-/* Intersection Observer Scroll Reveal Classes */
+/* Hero Entrance Animations (Page Load) */
+.hero-enter-1 {
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-2 {
+  opacity: 0;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-3 {
+  opacity: 0;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  will-change: opacity, transform;
+}
+
+.hero-enter-motif {
+  opacity: 0;
+  animation: heroMotifScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  will-change: opacity, transform;
+}
+
+/* Intersection Observer Scroll Reveal */
 .reveal-init {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(24px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
@@ -51,13 +75,34 @@
   transform: translateY(0);
 }
 
-/* Subtle Hover Transitions */
-.interactive-hover {
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
+/* Staggered Grid Item Delays */
+.reveal-init:nth-child(2) {
+  transition-delay: 0.08s;
 }
 
-.interactive-hover:hover {
+.reveal-init:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+.reveal-init:nth-child(4) {
+  transition-delay: 0.24s;
+}
+
+.reveal-init:nth-child(5) {
+  transition-delay: 0.32s;
+}
+
+/* Hover & Focus Interactions */
+.card-interactive {
+  transition: transform var(--transition-fast),
+              border-color var(--transition-base),
+              box-shadow var(--transition-base);
+}
+
+.card-interactive:hover {
   transform: translateY(-4px);
+  border-color: var(--color-border-light);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================================
@@ -73,10 +118,14 @@
     scroll-behavior: auto !important;
   }
 
+  .hero-enter-1,
+  .hero-enter-2,
+  .hero-enter-3,
+  .hero-enter-motif,
   .reveal-init {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
     transition: none !important;
   }
 }
-

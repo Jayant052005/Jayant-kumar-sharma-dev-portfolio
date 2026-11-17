@@ -43,23 +43,23 @@ needs input
 
 ## Phase 4 --- Contact
 
--   [ ] Build contact form markup and labels.
--   [ ] Add client-side validation and clear error messages.
--   [ ] Decide whether to use EmailJS or a mailto fallback.
--   [ ] Configure real service details if EmailJS is selected.
--   [ ] Test successful and failed submission states.
--   [ ] Confirm no private credentials are exposed.
+-   [x] Build contact form markup and labels.
+-   [x] Add client-side validation and clear error messages.
+-   [x] Decide whether to use EmailJS or a mailto fallback.
+-   [x] Configure real service details if EmailJS is selected.
+-   [x] Test successful and failed submission states.
+-   [x] Confirm no private credentials are exposed.
 
 ## Phase 5 --- Visual Polish and Motion
 
--   [ ] Implement responsive typography.
--   [ ] Add subtle hero entrance animation.
--   [ ] Add scroll reveal using Intersection Observer.
--   [ ] Add project card hover/focus states.
--   [ ] Add navigation and button interaction states.
--   [ ] Add reduced-motion support.
--   [ ] Review decorative red circle and editorial accents.
--   [ ] Remove any animation that harms readability or performance.
+-   [x] Implement responsive typography.
+-   [x] Add subtle hero entrance animation.
+-   [x] Add scroll reveal using Intersection Observer.
+-   [x] Add project card hover/focus states.
+-   [x] Add navigation and button interaction states.
+-   [x] Add reduced-motion support.
+-   [x] Review decorative red circle and editorial accents.
+-   [x] Remove any animation that harms readability or performance.
 
 ## Phase 6 --- Responsive and Accessibility QA
 
