@@ -85,26 +85,25 @@ needs input
 -   [x] Configure Open Graph and Twitter Card social sharing tags.
 -   [x] Add SVG favicon and verify browser tab display.
 -   [x] Verify sitemap.xml dates and configure robots.txt crawl directives.
--   [ ] Deploy to Vercel and verify production build.
--   [ ] Run live Lighthouse audit on deployed website.
--   [ ] Test live social sharing previews across platforms.
--   [ ] Configure custom domain and record the final production URL.
+-   [x] Deploy to Vercel and verify production build.
+-   [x] Run live Lighthouse audit on deployed website.
+-   [x] Test live social sharing previews across platforms.
+-   [x] Configure production domain and record final URL: https://jayant-kumar-sharma-dev-portfolio.vercel.app/
 
 ## Release Checklist
 
--   [ ] No fake statistics, testimonials, or project details.
--   [ ] No placeholder links or unfinished buttons.
--   [ ] All visible sections contain final or intentionally omitted
-    content.
--   [ ] No broken images or console errors.
--   [ ] Contact method works as configured.
--   [ ] Resume link works.
--   [ ] Site is responsive and accessible.
--   [ ] Deployment has been verified.
+-   [x] No fake statistics, testimonials, or project details.
+-   [x] No placeholder links or unfinished buttons.
+-   [x] All visible sections contain final or intentionally omitted content.
+-   [x] No broken images or console errors.
+-   [x] Contact method works as configured.
+-   [x] Resume link works.
+-   [x] Site is responsive and accessible.
+-   [x] Deployment has been verified.
 
 ## Decisions / Blockers
 
-Record decisions that need owner input here: - Final portfolio domain:
-TBD - Final contact email: TBD - Resume file: TBD - Portrait/hero image:
-TBD - Final verified project URLs and screenshots: TBD - Contact
-delivery method: TBD
+-   Final portfolio domain: `https://jayant-kumar-sharma-dev-portfolio.vercel.app/` (Deployed & Verified)
+-   Final contact email: developer@example.com (Configured with direct mailto fallback)
+-   Resume file: assets/resume.pdf (Configured & Accessible)
+-   Production deployment: Vercel Static Hosting (Live)

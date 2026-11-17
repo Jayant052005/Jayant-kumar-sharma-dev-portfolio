@@ -6,12 +6,15 @@
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://jayant-kumar-sharma-dev-portfolio.vercel.app/)
 [![WCAG 2.1](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA%2FAAA-brightgreen?style=flat-square)](https://www.w3.org/WAI/standards-guidelines/wcag/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=flat-square)](LICENSE)
 
 ---
 
 ## 📌 Overview
+
+🔗 **Live Production URL:** [https://jayant-kumar-sharma-dev-portfolio.vercel.app/](https://jayant-kumar-sharma-dev-portfolio.vercel.app/)
 
 This repository hosts the personal developer portfolio of **Jayant Kumar Sharma**, a Backend & Full-Stack Developer and B.Tech student based in Jamshedpur, Jharkhand, India. 
 
