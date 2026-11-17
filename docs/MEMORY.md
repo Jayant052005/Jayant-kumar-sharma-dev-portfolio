@@ -82,7 +82,10 @@ Do not assume every project is complete, public, or deployed.
 -   **Location:** Jamshedpur, Jharkhand, India
 -   **Status:** Student & Developer
 -   **GitHub:** https://github.com/Jayant052005
+-   **LinkedIn:** https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/
+-   **Email:** jayantkumarsharma05@gmail.com
 -   **Live Portfolio URL:** https://jayant-kumar-sharma-dev-portfolio.vercel.app/
+-   **Repository:** https://github.com/Jayant052005/Jayant-kumar-sharma-dev-portfolio
 -   **Professional Headline:** "BUILDING DIGITAL SOLUTIONS. EXPLORING POSSIBILITIES. CREATING IMPACT."
 -   The owner prefers a small technology stack (HTML5, CSS3, Vanilla JavaScript) and wants to understand the code.
 -   The owner uses VS Code on Windows.

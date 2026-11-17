@@ -8,7 +8,7 @@
 
 // Configuration for optional EmailJS or direct mail delivery
 const CONTACT_CONFIG = {
-  recipientEmail: "developer@example.com",
+  recipientEmail: "jayantkumarsharma05@gmail.com",
   // If EmailJS is configured later, service IDs can be supplied here without exposing secrets:
   emailjsServiceId: "",
   emailjsTemplateId: "",

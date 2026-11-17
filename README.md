@@ -166,9 +166,10 @@ The portfolio is structured for static deployment on any modern platform:
 *Backend & Full-Stack Developer*  
 Jamshedpur, Jharkhand, India  
 
+* **Portfolio:** [jayant-kumar-sharma-dev-portfolio.vercel.app](https://jayant-kumar-sharma-dev-portfolio.vercel.app/)
 * **GitHub:** [@Jayant052005](https://github.com/Jayant052005)
-* **LinkedIn:** [Jayant Kumar Sharma](https://linkedin.com) *(Update with your direct profile)*
-* **Email:** [developer@example.com](mailto:developer@example.com) *(Update with your direct email)*
+* **LinkedIn:** [Jayant Kumar Sharma](https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/)
+* **Email:** [jayantkumarsharma05@gmail.com](mailto:jayantkumarsharma05@gmail.com)
 
 ---
 
