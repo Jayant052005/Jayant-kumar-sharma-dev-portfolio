@@ -6,6 +6,7 @@
 import { initNavigation } from './navigation.js';
 import { initAnimations } from './animations.js';
 import { initContact } from './contact.js';
+import { initDragonScene } from './dragon/dragon-scene.js?v=3';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Update copyright year dynamically
@@ -18,5 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initAnimations();
   initContact();
+
+  // Initialize 3D Dragon Integration (Phase 2 & 3)
+  initDragonScene();
 });
 

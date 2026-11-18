@@ -38,9 +38,16 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/dragon.css?v=2">
 </head>
 
 <body>
+  <!-- Dragon Loading Feedback Indicator -->
+  <div id="dragon-loading-indicator" class="dragon-loading-indicator" role="status" aria-live="polite">
+    <div class="dragon-loading-spinner" aria-hidden="true"></div>
+    <span id="dragon-loading-label" class="dragon-loading-label">Summoning Dragon...</span>
+  </div>
+
   <!-- Accessible Skip Link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -77,6 +84,9 @@
   <main id="main-content" tabindex="-1">
     <!-- Hero Section -->
     <section id="hero" class="section hero-section">
+      <!-- 3D Dragon Canvas Container (Confined permanently to Home Hero Section) -->
+      <div id="dragon-canvas-container" class="dragon-canvas-container" aria-hidden="true"></div>
+
       <div class="container">
         <div class="hero-grid">
           <div class="hero-content">
@@ -1002,7 +1012,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?v=3"></script>
 </body>
 
 </html>
