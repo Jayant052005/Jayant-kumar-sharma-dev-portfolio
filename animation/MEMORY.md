@@ -121,7 +121,7 @@ Do not silently assume these limitations have been resolved.
 
 ## 8. Development Progress
 
-Phase 0, Phase 1, Phase 2, and Phase 3 completed.
+Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, Phase 8, Phase 9, and Phase 10 completed.
 
 Current status:
 
@@ -135,13 +135,13 @@ Current status:
 - [x] Phase 2 Primary 3D integration completed (`js/dragon/dragon-scene.js`, `js/dragon/dragon-loader.js`, `css/dragon.css`, `index.html`).
 - [x] Phase 3 Animation integration completed (`js/dragon/dragon-animation.js`, AnimationMixer loop at 0.85x speed).
 - [x] Dynamic Text Occlusion & 3D Depth Push-Pull: Text dynamically moves back and forth in 3D perspective space based on dragon depth ($Z > 0.3$: dragon in front, text pushed back; $Z \le 0.3$: dragon behind, text pulled forth).
-- [ ] Phase 4 Secondary model processing / Blender comparison.
-- [ ] Phase 5 Visual effects (eye glow, embers, smoke, fire).
-- [ ] Phase 6 Audio system (growl, roar, breathing, fire sounds, volume/mute).
-- [ ] Phase 7 Mouse interaction (head/cursor tracking, parallax, click-to-roar).
-- [ ] Phase 8 Scroll interaction (GSAP sync).
-- [ ] Phase 9 User Interface (Enter experience, HUD controls).
-- [ ] Phase 10 Performance optimization.
+- [x] Phase 4 Secondary model processing / geometric comparison completed (`animation/PHASE4_REPORT.md`).
+- [x] Phase 5 Visual effects completed (`js/dragon/dragon-effects.js`: eye glow, embers, smoke mist, atmospheric lighting, fire stream, and camera shake).
+- [x] Phase 6 Audio system completed (`js/dragon/dragon-audio.js`: 8 sound triggers, Web Audio API, volume/mute controls, channel ducking/overlap prevention, procedural fallback).
+- [x] Phase 7 Mouse interaction completed (`js/dragon/dragon-interactions.js`: pointer tracking, camera parallax, clamped head look-at tracking, accessible HUD controls).
+- [x] Phase 8 Scroll interaction completed (`js/dragon/dragon-scroll.js`: cinematic camera dolly, soaring dragon flight repositioning, section transitions, 100% native non-hijacked scroll).
+- [x] Phase 9 User Interface completed (`js/dragon/dragon-ui.js`: Enter Experience modal, Skip Intro, Sound Mute/Unmute, Volume Slider, Roar, Fire, Replay, Keyboard hotkeys, zero inline styles).
+- [x] Phase 10 Performance optimization completed (DPR clamping to 1.5 on mobile/touch and 2.0 on desktop, particle count throttling, frustum culling, anisotropy capped to 4, Page Visibility and IntersectionObserver render pausing, comprehensive `dispose()` memory lifecycle, reduced motion support).
 - [ ] Phase 11 Final testing & regression QA.
 
 ### Phase 2 & 3 Implementation Record:

@@ -57,9 +57,20 @@ export class DragonLoader {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            child.frustumCulled = true; // Optimization (Phase 10): Enable frustum culling
             if (child.material) {
               child.material.roughness = 0.35;
               child.material.metalness = 0.25;
+              // Optimization: Cap texture anisotropy for smooth performance without GPU strain
+              const textures = [
+                child.material.map,
+                child.material.normalMap,
+                child.material.roughnessMap,
+                child.material.metalnessMap
+              ].filter(Boolean);
+              for (const tex of textures) {
+                tex.anisotropy = 4;
+              }
             }
           }
         });

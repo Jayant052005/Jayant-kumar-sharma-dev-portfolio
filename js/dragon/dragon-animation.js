@@ -67,4 +67,14 @@ export class DragonAnimationController {
   getDuration() {
     return this.clipDuration;
   }
+
+  dispose() {
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      if (this.model) this.mixer.uncacheRoot(this.model);
+      this.mixer = null;
+    }
+    this.activeAction = null;
+    this.isPlaying = false;
+  }
 }

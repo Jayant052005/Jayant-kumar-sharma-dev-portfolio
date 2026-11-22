@@ -6,7 +6,7 @@
 import { initNavigation } from './navigation.js';
 import { initAnimations } from './animations.js';
 import { initContact } from './contact.js';
-import { initDragonScene } from './dragon/dragon-scene.js?v=3';
+import { initDragonScene } from './dragon/dragon-scene.js?v=10';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Update copyright year dynamically

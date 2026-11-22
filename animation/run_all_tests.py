@@ -81,6 +81,9 @@ def test_suite():
             if r.get("result", {}).get("result", {}).get("value"): break
 
         time.sleep(1.5)
+        # Dismiss intro overlay for viewport benchmarks if present
+        cdp(ws, "Runtime.evaluate", {"expression": "const skip = document.getElementById('dragon-skip-btn'); if (skip) skip.click();"}, msg_id=15)
+        time.sleep(0.5)
 
         # -------------------------------------------------------------
         # TEST 1: Initial Position & Head Visibility Check

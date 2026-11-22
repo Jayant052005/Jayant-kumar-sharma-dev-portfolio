@@ -114,3 +114,224 @@
     animation: none;
   }
 }
+
+/* 5. Dragon Interactive HUD Controls (Phase 7: Roar & Fire Controls) */
+.dragon-interactive-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  position: relative;
+  z-index: 10;
+}
+
+.dragon-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: rgba(22, 22, 22, 0.85);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.dragon-hud-btn:hover {
+  background: rgba(229, 37, 42, 0.15);
+  border-color: var(--color-accent);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(229, 37, 42, 0.3);
+}
+
+.dragon-hud-btn:active {
+  transform: translateY(0);
+}
+
+.dragon-hud-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.dragon-hud-btn svg {
+  color: var(--color-accent);
+  transition: transform 0.25s ease;
+}
+
+.dragon-hud-btn:hover svg {
+  transform: scale(1.15);
+}
+
+.dragon-hud-btn.fire-btn:hover {
+  background: rgba(255, 106, 0, 0.15);
+  border-color: #ff6a00;
+  box-shadow: 0 4px 14px rgba(255, 106, 0, 0.3);
+}
+
+.dragon-hud-btn.fire-btn svg {
+  color: #ff6a00;
+}
+
+.dragon-hud-btn.sound-btn.is-muted {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-muted);
+}
+
+.dragon-hud-btn.sound-btn.is-muted svg {
+  color: var(--color-muted);
+}
+
+/* Volume Slider Control */
+.dragon-volume-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  background: rgba(22, 22, 22, 0.85);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dragon-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 65px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dragon-volume-slider:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dragon-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 6px rgba(229, 37, 42, 0.5);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.dragon-volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.dragon-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  cursor: pointer;
+}
+
+/* 6. Cinematic Intro Overlay (Phase 9: Enter Experience & Skip Intro) */
+.dragon-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(8, 8, 8, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
+}
+
+.dragon-intro-overlay.is-dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.dragon-intro-card {
+  max-width: 480px;
+  width: 100%;
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 37, 42, 0.12);
+  transform: translateY(0);
+  transition: transform 0.5s ease;
+}
+
+.dragon-intro-overlay.is-dismissed .dragon-intro-card {
+  transform: translateY(20px);
+}
+
+.dragon-intro-tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+.dragon-intro-heading {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.dragon-intro-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+  margin-bottom: 2rem;
+}
+
+.dragon-intro-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.dragon-intro-actions .btn {
+  padding: 0.75rem 1.4rem;
+  font-size: 0.85rem;
+}
+
+/* Responsive HUD Bar Wrapping */
+@media (max-width: 768px) {
+  .dragon-interactive-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .dragon-volume-slider {
+    width: 50px;
+  }
+}
+

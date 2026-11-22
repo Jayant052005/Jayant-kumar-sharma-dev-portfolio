@@ -6,6 +6,11 @@
 import * as THREE from '../libs/three.module.js';
 import { DragonLoader } from './dragon-loader.js?v=3';
 import { DragonAnimationController } from './dragon-animation.js';
+import { DragonEffects } from './dragon-effects.js';
+import { DragonAudio } from './dragon-audio.js';
+import { DragonInteractions } from './dragon-interactions.js';
+import { DragonScrollController } from './dragon-scroll.js';
+import { DragonUI } from './dragon-ui.js';
 
 export class DragonScene {
   constructor() {
@@ -26,6 +31,7 @@ export class DragonScene {
     this.clock = new THREE.Clock();
     this.dragonPivot = null;
     this.basePivotPos = null;
+    this.basePivotRot = null;
     this.dragonBones = null;
     this.headBone = null;
     this.headCluster = [];
@@ -41,10 +47,17 @@ export class DragonScene {
     this.animationController = null;
     this.isTabVisible = true;
     this.isHeroVisible = true;
+    this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.isDisposed = false;
     this.textTrackingElements = [];
 
     this.initScene();
     this.initLights();
+    this.effects = new DragonEffects(this.scene, this.camera);
+    this.audio = new DragonAudio();
+    this.interactions = new DragonInteractions(this);
+    this.scrollController = new DragonScrollController(this);
+    this.ui = new DragonUI(this);
     this.initTextTracking();
     this.loadDragon();
     this.initEvents();
@@ -84,7 +97,10 @@ export class DragonScene {
       powerPreference: 'high-performance'
     });
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Performance Optimization (Phase 10): Limit DPR to 1.5 on mobile/touch, 2.0 on desktop
+    const isMobileDevice = width <= 768 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+    const maxDpr = isMobileDevice ? 1.5 : 2.0;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
     this.renderer.shadowMap.enabled = true;
@@ -190,6 +206,7 @@ export class DragonScene {
       onLoad: (result) => {
         this.dragonPivot = result.model;
         this.basePivotPos = result.model.position.clone();
+        this.basePivotRot = result.model.rotation.clone();
         this.dragonBones = result.bones || [];
         this.scene.add(this.dragonPivot);
 
@@ -205,6 +222,11 @@ export class DragonScene {
 
         // Initialize Animation Controller with Take 001
         this.animationController = new DragonAnimationController(result.rawScene, result.animations);
+
+        // Attach visual effects (Phase 5: red eye glow)
+        if (this.effects) {
+          this.effects.attachEyeGlow(this.headBone, this.dragonPivot);
+        }
 
         // Hide loading indicator with smooth fade
         this.hideLoadingIndicator();
@@ -229,18 +251,22 @@ export class DragonScene {
   }
 
   initEvents() {
-    // Window resize tracking hero container bounds
-    window.addEventListener('resize', () => {
+    // Window resize tracking hero container bounds (Phase 10: DPR recalculation on resize)
+    this._onResize = () => {
       const width = this.container.clientWidth || window.innerWidth;
       const height = this.container.clientHeight || window.innerHeight;
       this.camera.aspect = width / height;
       this.updateCameraForViewport();
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(width, height);
-    });
+      const isMobile = width <= 768 || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+      const maxDpr = isMobile ? 1.5 : 2.0;
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+    };
+    window.addEventListener('resize', this._onResize);
 
-    // Page Visibility API (pause rendering loop when tab is backgrounded)
-    document.addEventListener('visibilitychange', () => {
+    // Page Visibility API (pause rendering loop and mixer ticks when tab is backgrounded)
+    this._onVisibilityChange = () => {
       this.isTabVisible = !document.hidden;
       if (this.isTabVisible && this.isHeroVisible) {
         this.clock.start();
@@ -249,11 +275,12 @@ export class DragonScene {
         this.clock.stop();
         if (this.animationController) this.animationController.pause();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this._onVisibilityChange);
 
     // Hero Visibility Observer: Confine dragon to hero section (0% GPU bleed into About Me or lower)
-    const heroEl = document.getElementById('hero');
-    if (heroEl && 'IntersectionObserver' in window) {
+    this.heroEl = document.getElementById('hero');
+    if (this.heroEl && 'IntersectionObserver' in window) {
       this.heroObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           this.isHeroVisible = entry.isIntersecting;
@@ -265,7 +292,63 @@ export class DragonScene {
           }
         });
       }, { threshold: 0.01 });
-      this.heroObserver.observe(heroEl);
+      this.heroObserver.observe(this.heroEl);
+    }
+
+    // Interactive fire effect on hero click (excluding navigation/button clicks)
+    if (this.heroEl) {
+      this._onHeroClick = (e) => {
+        if (e.target.closest('a, button, input, textarea')) return;
+        this.triggerFire();
+      };
+      this.heroEl.addEventListener('click', this._onHeroClick);
+
+      // Double-click to trigger dragon roar
+      this._onHeroDblClick = (e) => {
+        if (e.target.closest('a, button, input, textarea')) return;
+        this.triggerRoar();
+      };
+      this.heroEl.addEventListener('dblclick', this._onHeroDblClick);
+    }
+  }
+
+  triggerFire(duration = 2.2) {
+    if (this.effects) {
+      this.effects.triggerFire(duration);
+    }
+    if (this.audio) {
+      this.audio.play('fire_blast');
+    }
+  }
+
+  triggerRoar() {
+    if (this.audio) {
+      this.audio.play('roar');
+    }
+    if (this.effects) {
+      this.effects.triggerCameraShake(0.20, 0.9);
+      this.effects.setEyeGlowIntensity(2.4);
+      setTimeout(() => {
+        if (this.effects) this.effects.setEyeGlowIntensity(1.0);
+      }, 1600);
+    }
+  }
+
+  triggerGrowl() {
+    if (this.audio) {
+      this.audio.play('growl');
+    }
+    if (this.effects) {
+      this.effects.setEyeGlowIntensity(1.6);
+      setTimeout(() => {
+        if (this.effects) this.effects.setEyeGlowIntensity(1.0);
+      }, 1200);
+    }
+  }
+
+  triggerCameraShake(intensity = 0.15, duration = 0.5) {
+    if (this.effects) {
+      this.effects.triggerCameraShake(intensity, duration);
     }
   }
 
@@ -360,11 +443,23 @@ export class DragonScene {
     targetLookAt.x += config.xOffset;
     targetLookAt.y += config.yOffset;
 
+    if (this.interactions) {
+      const parallax = this.interactions.getParallaxOffset();
+      targetLookAt.x += parallax.x;
+      targetLookAt.y += parallax.y;
+    }
+
+    if (this.scrollController) {
+      const scrollCam = this.scrollController.getCameraOffset();
+      targetLookAt.x += scrollCam.x * 0.4;
+      targetLookAt.y += scrollCam.y * 0.4;
+    }
+
     const targetCamPos = this._tempCamPos;
     targetCamPos.set(
-      targetLookAt.x,
-      targetLookAt.y + 0.25,
-      targetLookAt.z + config.distance
+      targetLookAt.x + (this.scrollController ? this.scrollController.getCameraOffset().x * 0.6 : 0),
+      targetLookAt.y + 0.25 + (this.scrollController ? this.scrollController.getCameraOffset().y * 0.6 : 0),
+      targetLookAt.z + config.distance + (this.scrollController ? this.scrollController.getCameraOffset().z : 0)
     );
 
     // 4. Safe Zone Enforcement (8-12% horizontal and vertical screen padding)
@@ -451,6 +546,7 @@ export class DragonScene {
   }
 
   animate() {
+    if (this.isDisposed) return;
     requestAnimationFrame(() => this.animate());
 
     if (!this.isTabVisible || !this.isHeroVisible) return;
@@ -462,19 +558,113 @@ export class DragonScene {
       this.animationController.update(delta);
     }
 
-    // Gentle global hover float
+    // Scroll interaction update (Phase 8: cinematic camera & dragon repositioning)
+    if (this.scrollController) {
+      this.scrollController.update(delta);
+    }
+
+    // Gentle global hover float & scroll repositioning (dampened for reduced motion)
     if (this.dragonPivot && this.basePivotPos) {
       const time = this.clock.getElapsedTime();
-      this.dragonPivot.position.y = this.basePivotPos.y + Math.sin(time * 1.2) * 0.08;
+      const hoverFactor = this.isReducedMotion ? 0.02 : 0.08;
+      const hoverY = Math.sin(time * 1.2) * hoverFactor;
+      const scrollPos = this.scrollController ? this.scrollController.getDragonPosOffset() : null;
+      const scrollRot = this.scrollController ? this.scrollController.getDragonRotOffset() : null;
+
+      this.dragonPivot.position.x = this.basePivotPos.x + (scrollPos ? scrollPos.x : 0);
+      this.dragonPivot.position.y = this.basePivotPos.y + hoverY + (scrollPos ? scrollPos.y : 0);
+      this.dragonPivot.position.z = this.basePivotPos.z + (scrollPos ? scrollPos.z : 0);
+
+      if (this.basePivotRot && scrollRot) {
+        this.dragonPivot.rotation.x = this.basePivotRot.x + scrollRot.x;
+        this.dragonPivot.rotation.y = this.basePivotRot.y + scrollRot.y;
+        this.dragonPivot.rotation.z = this.basePivotRot.z + scrollRot.z;
+      }
+    }
+
+    // Mouse & Pointer Interactions update (Phase 7: pointer tracking & head look-at)
+    if (this.interactions) {
+      this.interactions.update(delta);
     }
 
     // Dynamic head tracking keeps the dragon head/face/horns/eyes framed in the safe zone
     this.updateHeadTracking(delta);
 
+    // Visual Effects update (Phase 5: Eye glow, embers, smoke, fire)
+    if (this.effects) {
+      this.effects.update(delta);
+      const shake = this.effects.getCameraShakeOffset();
+      if (shake.x !== 0 || shake.y !== 0 || shake.z !== 0) {
+        this.camera.position.add(shake);
+      }
+    }
+
     // Update text fading when dragon moves behind text
     this.updateTextBehindOcclusion();
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+  /* ---------------------------------------------------------
+   * Resource Disposal & Memory Cleanup (Phase 10)
+   * --------------------------------------------------------- */
+  dispose() {
+    this.isDisposed = true;
+
+    // Disconnect IntersectionObserver
+    if (this.heroObserver) {
+      this.heroObserver.disconnect();
+      this.heroObserver = null;
+    }
+
+    // Remove window and document listeners
+    if (this._onResize) window.removeEventListener('resize', this._onResize);
+    if (this._onVisibilityChange) document.removeEventListener('visibilitychange', this._onVisibilityChange);
+    if (this._onHeroClick && this.heroEl) this.heroEl.removeEventListener('click', this._onHeroClick);
+    if (this._onHeroDblClick && this.heroEl) this.heroEl.removeEventListener('dblclick', this._onHeroDblClick);
+
+    // Dispose sub-controllers
+    if (this.ui) this.ui.dispose();
+    if (this.interactions) this.interactions.dispose();
+    if (this.scrollController) this.scrollController.dispose();
+    if (this.effects) this.effects.dispose();
+    if (this.audio) this.audio.dispose();
+    if (this.animationController) this.animationController.dispose();
+
+    // Traverse scene to release all geometries, materials, and textures
+    if (this.scene) {
+      this.scene.traverse((object) => {
+        if (object.geometry) {
+          object.geometry.dispose();
+        }
+        if (object.material) {
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach((mat) => {
+            const textureProps = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'envMap', 'alphaMap'];
+            textureProps.forEach((prop) => {
+              if (mat[prop] && typeof mat[prop].dispose === 'function') {
+                mat[prop].dispose();
+              }
+            });
+            mat.dispose();
+          });
+        }
+      });
+    }
+
+    // Release WebGL renderer and canvas
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer.forceContextLoss();
+      if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+        this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+      }
+      this.renderer = null;
+    }
+
+    delete window.__DRAGON_SCENE__;
+    delete window.__DRAGON_READY__;
+    console.log('🧹 DragonScene successfully disposed all WebGL, Audio, and DOM resources.');
   }
 }
 
