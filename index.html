@@ -14,14 +14,17 @@
   <!-- Open Graph / Social Sharing -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Jayant Kumar Sharma | Backend &amp; Full-Stack Developer">
-  <meta property="og:description" content="Personal portfolio of Jayant Kumar Sharma — backend-focused, full-stack web developer.">
-  <meta property="og:image" content="https://jayant-kumar-sharma-dev-portfolio.vercel.app/assets/images/project-placeholder.svg">
+  <meta property="og:description"
+    content="Personal portfolio of Jayant Kumar Sharma — backend-focused, full-stack web developer.">
+  <meta property="og:image"
+    content="https://jayant-kumar-sharma-dev-portfolio.vercel.app/assets/images/project-placeholder.svg">
   <meta property="og:url" content="https://jayant-kumar-sharma-dev-portfolio.vercel.app/">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jayant Kumar Sharma | Backend &amp; Full-Stack Developer">
-  <meta name="twitter:description" content="Personal portfolio of Jayant Kumar Sharma — backend-focused, full-stack web developer.">
+  <meta name="twitter:description"
+    content="Personal portfolio of Jayant Kumar Sharma — backend-focused, full-stack web developer.">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
@@ -49,7 +52,8 @@
   </div>
 
   <!-- Dragon Cinematic Intro Overlay (Phase 9: Enter Experience & Skip Intro) -->
-  <div id="dragon-intro-overlay" class="dragon-intro-overlay" role="dialog" aria-modal="true" aria-labelledby="intro-title" aria-describedby="intro-desc">
+  <div id="dragon-intro-overlay" class="dragon-intro-overlay" role="dialog" aria-modal="true"
+    aria-labelledby="intro-title" aria-describedby="intro-desc">
     <div class="dragon-intro-card">
       <span class="dragon-intro-tag">Cinematic Experience</span>
       <h2 id="intro-title" class="dragon-intro-heading">THE CHINESE DRAGON</h2>
@@ -59,7 +63,10 @@
       <div class="dragon-intro-actions">
         <button type="button" id="dragon-enter-btn" class="btn btn-primary dragon-enter-btn">
           <span>Enter Experience</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
         </button>
         <button type="button" id="dragon-skip-btn" class="btn btn-secondary dragon-skip-btn">
           <span>Skip Intro</span>
@@ -122,26 +129,55 @@
             </div>
 
             <!-- Dragon Interactive Controls HUD (Phase 9) -->
-            <div id="dragon-interactive-controls" class="dragon-interactive-controls" role="group" aria-label="Dragon Interactive Controls">
-              <button type="button" id="dragon-roar-btn" class="dragon-hud-btn" aria-label="Trigger Dragon Roar" title="Dragon Roar (Hotkey: R)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <div id="dragon-interactive-controls" class="dragon-interactive-controls" role="group"
+              aria-label="Dragon Interactive Controls">
+              <button type="button" id="dragon-roar-btn" class="dragon-hud-btn" aria-label="Trigger Dragon Roar"
+                title="Dragon Roar (Hotkey: R)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                  <line x1="9" y1="9" x2="9.01" y2="9" />
+                  <line x1="15" y1="9" x2="15.01" y2="9" />
+                </svg>
                 <span>Roar</span>
               </button>
-              <button type="button" id="dragon-fire-btn" class="dragon-hud-btn fire-btn" aria-label="Trigger Fire Breath" title="Fire Breath (Hotkey: F)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+              <button type="button" id="dragon-fire-btn" class="dragon-hud-btn fire-btn"
+                aria-label="Trigger Fire Breath" title="Fire Breath (Hotkey: F)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  aria-hidden="true">
+                  <path
+                    d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                </svg>
                 <span>Fire</span>
               </button>
-              <button type="button" id="dragon-sound-btn" class="dragon-hud-btn sound-btn" aria-label="Mute Dragon Audio" title="Mute/Unmute Audio (Hotkey: M)">
-                <svg id="dragon-sound-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-                <svg id="dragon-sound-icon-off" class="is-hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+              <button type="button" id="dragon-sound-btn" class="dragon-hud-btn sound-btn"
+                aria-label="Mute Dragon Audio" title="Mute/Unmute Audio (Hotkey: M)">
+                <svg id="dragon-sound-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                </svg>
+                <svg id="dragon-sound-icon-off" class="is-hidden" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <line x1="23" y1="9" x2="17" y2="15" />
+                  <line x1="17" y1="9" x2="23" y2="15" />
+                </svg>
                 <span id="dragon-sound-label">Sound</span>
               </button>
               <div class="dragon-volume-control" title="Adjust Dragon Volume">
                 <label for="dragon-volume-slider" class="sr-only">Dragon Volume</label>
-                <input type="range" id="dragon-volume-slider" min="0" max="100" value="75" aria-label="Dragon Volume Slider" class="dragon-volume-slider">
+                <input type="range" id="dragon-volume-slider" min="0" max="100" value="75"
+                  aria-label="Dragon Volume Slider" class="dragon-volume-slider">
               </div>
-              <button type="button" id="dragon-replay-btn" class="dragon-hud-btn replay-btn" aria-label="Replay Cinematic Awakening" title="Replay Intro (Hotkey: P)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              <button type="button" id="dragon-replay-btn" class="dragon-hud-btn replay-btn"
+                aria-label="Replay Cinematic Awakening" title="Replay Intro (Hotkey: P)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10" />
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                </svg>
                 <span>Replay</span>
               </button>
             </div>
@@ -329,14 +365,14 @@
                   </div>
                   <div class="project-actions">
                     <div class="project-links-group">
-                      <a href="#contact" class="project-link">
+                      <a href="https://campusshare-frontend-swart.vercel.app/" class="project-link">
                         <span>Live Demo</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
                         </svg>
                       </a>
-                      <a href="https://github.com/Jayant052005" target="_blank" rel="noopener noreferrer"
+                      <a href="https://github.com/Jayant052005/CampusShare" target="_blank" rel="noopener noreferrer"
                         class="project-link secondary">
                         <span>Source Code</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -380,15 +416,15 @@
                   </div>
                   <div class="project-actions">
                     <div class="project-links-group">
-                      <a href="#contact" class="project-link">
+                      <a href="https://expense-audit-ai.onrender.com/" class="project-link">
                         <span>Live Demo</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
                         </svg>
                       </a>
-                      <a href="https://github.com/Jayant052005" target="_blank" rel="noopener noreferrer"
-                        class="project-link secondary">
+                      <a href="https://github.com/Jayant052005/Expense-Audit-AI" target="_blank"
+                        rel="noopener noreferrer" class="project-link secondary">
                         <span>Source Code</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
@@ -429,14 +465,14 @@
                   </div>
                   <div class="project-actions">
                     <div class="project-links-group">
-                      <a href="#contact" class="project-link">
+                      <a href="https://rasegs.vercel.app/" class="project-link">
                         <span>Live Demo</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
                         </svg>
                       </a>
-                      <a href="https://github.com/Jayant052005" target="_blank" rel="noopener noreferrer"
+                      <a href="https://github.com/Jayant052005/Rasegs" target="_blank" rel="noopener noreferrer"
                         class="project-link secondary">
                         <span>Source Code</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -477,15 +513,15 @@
                   </div>
                   <div class="project-actions">
                     <div class="project-links-group">
-                      <a href="#contact" class="project-link">
+                      <a href="https://life-in-recepits.vercel.app/" class="project-link">
                         <span>Live Demo</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
                         </svg>
                       </a>
-                      <a href="https://github.com/Jayant052005" target="_blank" rel="noopener noreferrer"
-                        class="project-link secondary">
+                      <a href="https://github.com/Jayant052005/Life-in-Recepits" target="_blank"
+                        rel="noopener noreferrer" class="project-link secondary">
                         <span>Source Code</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2" aria-hidden="true">
@@ -721,7 +757,8 @@
             </a>
 
             <!-- LinkedIn Link -->
-            <a href="https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/" target="_blank" rel="noopener noreferrer" class="social-profile-card"
+            <a href="https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/" target="_blank"
+              rel="noopener noreferrer" class="social-profile-card"
               aria-label="Visit Jayant's LinkedIn Profile (Verified Platform Link)">
               <div class="social-profile-info">
                 <div class="social-profile-icon" aria-hidden="true">
@@ -744,7 +781,8 @@
             </a>
 
             <!-- Direct Email Link -->
-            <a href="mailto:jayantkumarsharma05@gmail.com" class="social-profile-card" aria-label="Send Direct Email to Jayant">
+            <a href="mailto:jayantkumarsharma05@gmail.com" class="social-profile-card"
+              aria-label="Send Direct Email to Jayant">
               <div class="social-profile-info">
                 <div class="social-profile-icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1027,8 +1065,8 @@
               d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
           </svg>
         </a>
-        <a href="https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/" target="_blank" rel="noopener noreferrer" class="social-icon-link"
-          aria-label="LinkedIn Profile">
+        <a href="https://www.linkedin.com/in/jayant-kumar-sharma-87216139a/" target="_blank" rel="noopener noreferrer"
+          class="social-icon-link" aria-label="LinkedIn Profile">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
