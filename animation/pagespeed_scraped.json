@@ -1,0 +1,105 @@
+{
+  "categories": [
+    {
+      "title": "Performance",
+      "val": "63"
+    },
+    {
+      "title": "Accessibility",
+      "val": "96"
+    },
+    {
+      "title": "Best Practices",
+      "val": "100"
+    },
+    {
+      "title": "SEO",
+      "val": "100"
+    },
+    {
+      "title": "Accessibility",
+      "val": "96"
+    },
+    {
+      "title": "Best Practices",
+      "val": "100"
+    },
+    {
+      "title": "SEO",
+      "val": "100"
+    },
+    {
+      "title": "Performance",
+      "val": "67"
+    },
+    {
+      "title": "Accessibility",
+      "val": "96"
+    },
+    {
+      "title": "Best Practices",
+      "val": "100"
+    },
+    {
+      "title": "SEO",
+      "val": "100"
+    },
+    {
+      "title": "Accessibility",
+      "val": "96"
+    },
+    {
+      "title": "Best Practices",
+      "val": "100"
+    },
+    {
+      "title": "SEO",
+      "val": "100"
+    }
+  ],
+  "metrics": [
+    {
+      "title": "First Contentful Paint",
+      "val": "0.9\u00a0s"
+    },
+    {
+      "title": "Largest Contentful Paint",
+      "val": "0.9\u00a0s"
+    },
+    {
+      "title": "Total Blocking Time",
+      "val": "31,460\u00a0ms"
+    },
+    {
+      "title": "Cumulative Layout Shift",
+      "val": "0.025"
+    },
+    {
+      "title": "Speed Index",
+      "val": "7.1\u00a0s"
+    },
+    {
+      "title": "First Contentful Paint",
+      "val": "0.3\u00a0s"
+    },
+    {
+      "title": "Largest Contentful Paint",
+      "val": "0.3\u00a0s"
+    },
+    {
+      "title": "Total Blocking Time",
+      "val": "25,080\u00a0ms"
+    },
+    {
+      "title": "Cumulative Layout Shift",
+      "val": "0.026"
+    },
+    {
+      "title": "Speed Index",
+      "val": "1.7\u00a0s"
+    }
+  ],
+  "opportunities": [],
+  "diagnostics": [],
+  "bodyTextSnippet": "PageSpeed Insights\nCopy Link\nDocs\nThis site uses cookies from Google to deliver its services and to analyze traffic.\nLearn More.\nOk, Got it.\nReport from Nov 24, 2026, 8:48:46\u202fPM\n\nEnter a valid URL\n\nAnalyze\nsmartphone\nMobile\ncomputer\nDesktop\nDiscover what your real users are experiencing\nNo Data\nDiagnose performance issues\n67\nPerformance\n96\nAccessibility\n100\nBest Practices\n100\nSEO\n2/2\nAgentic Browsing\n67\nFCP\n+10\nLCP\n+25\nTBT\n+0\nCLS\n+25\nSI\n+7\nPerformance\nValues are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.\n0\u201349\n50\u201389\n90\u2013100\nMETRICS\nExpand view\nFirst Contentful Paint\n0.3\u00a0s\nLargest Contentful Paint\n0.3\u00a0s\nTotal Blocking Time\n25,080\u00a0ms\nCumulative Layout Shift\n0.026\nSpeed Index\n1.7\u00a0s\nCaptured at Nov 24, 2026, 8:48 PM GMT+5:30\nEmulated Desktop with Lighthouse 13.6.0\nSingle page session\nInitial page load\nCustom throttling\nUsing HeadlessChromium 157.0.8103.38 with lr\nView Treemap\nShow audits relevant to:\nAll\nFCP\nLCP\nTBT\nCLS\nINSIGHTS\nRender-blocking requests Est savings of 160\u00a0ms\nForced reflow\nNetwork dependency tree\nLayout shift culprits\nOptimize DOM size\nLCP breakdown\n3rd parties\nThese insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.\nDIAGNOSTICS\nMinimize main-thread work 31.8\u00a0s\nReduce JavaScript execution time 1.5\u00a0s\nMinify JavaScript Est savings of 79\u00a0KiB\nReduce unused JavaScript Est savings of 133\u00a0KiB\nAvoid enormous network payloads Total size was 16,548\u00a0KiB\nAvoid long main-thread tasks 20 long tasks found\nMore information about the performance of your application. These numbers don't directly affect the Performance score.\nPASSED AUDITS (14)\nShow\n96\nAccessibility\nThese checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.\nCONTRAST\nBackground and foreground colors do not have a sufficient contrast ratio.\nThese are opportunities to improve the legibility of your content.\nBEST PRACTICES\nIdentical links have the same purpose.\nThese items highlight common accessibility best practices.\nADDITIONAL ITEMS TO MANUALLY CHECK (10)\nShow\nThese items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.\nPASSED AUDITS (24)\nShow\nNOT APPLICABLE (37)\nShow\n100\nBest Practices\nTRUST AND SAFETY\nEnsure CSP is effective against XSS attacks\nEnsure proper origin isolation with COOP\nMitigate clickjacking with XFO or CSP\nMitigate DOM-based XSS with Trusted Types\nBROWSER COMPATIBILITY\nBaseline Features\nGENERAL\nDetected JavaScript libraries\nMissing source maps for large first-party JavaScript\nPASSED AUDITS (12)\nShow\nNOT APPLICABLE (2)\nShow\n100\nSEO\nThese checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect y"
+}
