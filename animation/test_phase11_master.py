@@ -86,6 +86,7 @@ def test_phase11_master():
         # DIMENSION 1: Model Loading & Skeletal Integrity
         # -------------------------------------------------------------
         print("\n[PHASE 11 - DIMENSION 1] Verifying Model Loading & Rigging...")
+        cdp(ws, "Runtime.evaluate", {"expression": "if (window.__START_DRAGON__) window.__START_DRAGON__();"}, 5)
         for _ in range(50):
             res = cdp(ws, "Runtime.evaluate", {
                 "expression": "!!(window.__DRAGON_SCENE__ && window.__DRAGON_SCENE__.dragonPivot)"

@@ -19,6 +19,7 @@
   --color-text: #F5F5F5;
   --color-muted: #A0A0A0;
   --color-accent: #E5252A;
+  --color-accent-text: #FF4D50;
   --color-accent-hover: #ff3b40;
   --color-border: #292929;
   --color-border-light: #383838;
@@ -275,7 +276,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: var(--space-sm);
 }
 
