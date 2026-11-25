@@ -255,10 +255,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.25rem;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
+  cursor: pointer;
 }
 
 .dragon-intro-overlay.is-dismissed {
@@ -268,60 +269,61 @@
 }
 
 .dragon-intro-card {
-  max-width: 480px;
+  max-width: 360px;
   width: 100%;
   background: rgba(18, 18, 18, 0.95);
   border: 1px solid var(--color-border);
   border-top: 3px solid var(--color-accent);
   border-radius: var(--radius-md);
-  padding: 2.5rem 2rem;
+  padding: 1.5rem 1.4rem 1.35rem;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 37, 42, 0.12);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(229, 37, 42, 0.12);
   transform: translateY(0);
   transition: transform 0.5s ease;
+  cursor: default;
 }
 
 .dragon-intro-overlay.is-dismissed .dragon-intro-card {
-  transform: translateY(20px);
+  transform: translateY(16px);
 }
 
 .dragon-intro-tag {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #FF4D50;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.35rem;
 }
 
 .dragon-intro-heading {
   font-family: var(--font-display);
-  font-size: 2.25rem;
+  font-size: 1.5rem;
   letter-spacing: 0.04em;
   color: #ffffff;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.45rem;
 }
 
 .dragon-intro-text {
   font-family: var(--font-body);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   color: var(--color-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .dragon-intro-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.65rem;
 }
 
 .dragon-intro-actions .btn {
-  padding: 0.75rem 1.4rem;
-  font-size: 0.85rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.8rem;
 }
 
 /* Responsive HUD Bar Wrapping */

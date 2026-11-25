@@ -23,10 +23,12 @@ export class DragonUI {
     this.replayBtn = document.getElementById('dragon-replay-btn');
 
     this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this._isExperienceEntered = false;
 
     // Bound listeners for clean disposal (Phase 10)
     this._onEnter = () => this.enterExperience();
     this._onSkip = () => this.skipIntro();
+    this._onOverlayClick = (e) => this.handleOverlayClick(e);
     this._onSoundClick = () => {
       if (this.audio) {
         const isMuted = this.audio.toggleMute();
@@ -74,15 +76,35 @@ export class DragonUI {
       this.skipBtn.addEventListener('click', this._onSkip);
     }
 
+    // Outside-click on backdrop triggers Enter Experience
+    if (this.overlay) {
+      this.overlay.addEventListener('click', this._onOverlayClick);
+    }
+
     // Auto-skip if reduced motion is requested
     if (this.isReducedMotion && this.overlay) {
       this.skipIntro();
     }
   }
 
+  handleOverlayClick(e) {
+    // If click was outside the modal card, trigger Enter Experience
+    if (!e.target.closest('.dragon-intro-card')) {
+      this.enterExperience();
+    }
+  }
+
   enterExperience() {
+    if (this._isExperienceEntered) return;
+    this._isExperienceEntered = true;
+
     if (this.overlay) {
       this.overlay.classList.add('is-dismissed');
+    }
+
+    // Wake up 3D scene initialization if deferred
+    if (window.__START_DRAGON__) {
+      window.__START_DRAGON__();
     }
 
     // Audio gesture unlock & initial awakening sound
@@ -101,12 +123,14 @@ export class DragonUI {
   }
 
   skipIntro() {
+    this._isExperienceEntered = true;
     if (this.overlay) {
       this.overlay.classList.add('is-dismissed');
     }
   }
 
   replayIntro() {
+    this._isExperienceEntered = false;
     if (this.overlay) {
       this.overlay.classList.remove('is-dismissed');
     }
@@ -218,6 +242,7 @@ export class DragonUI {
   }
 
   dispose() {
+    if (this.overlay) this.overlay.removeEventListener('click', this._onOverlayClick);
     if (this.enterBtn) this.enterBtn.removeEventListener('click', this._onEnter);
     if (this.skipBtn) this.skipBtn.removeEventListener('click', this._onSkip);
     if (this.soundBtn) this.soundBtn.removeEventListener('click', this._onSoundClick);
