@@ -17,10 +17,8 @@ export class DragonUI {
     this.soundIconOn = document.getElementById('dragon-sound-icon-on');
     this.soundIconOff = document.getElementById('dragon-sound-icon-off');
     this.soundLabel = document.getElementById('dragon-sound-label');
-    this.volumeSlider = document.getElementById('dragon-volume-slider');
     this.roarBtn = document.getElementById('dragon-roar-btn');
     this.fireBtn = document.getElementById('dragon-fire-btn');
-    this.replayBtn = document.getElementById('dragon-replay-btn');
 
     this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this._isExperienceEntered = false;
@@ -35,25 +33,9 @@ export class DragonUI {
         this.updateSoundUI(isMuted);
       }
     };
-    this._onVolumeInput = (e) => {
-      const val = parseFloat(e.target.value) / 100;
-      if (this.audio) {
-        this.audio.setVolume(val);
-        if (this.audio.isMuted()) {
-          this.audio.unmute();
-          this.updateSoundUI(false);
-        }
-      }
-    };
     this._onRoar = () => { if (this.scene) this.scene.triggerRoar(); };
     this._onFire = () => { if (this.scene) this.scene.triggerFire(); };
-    this._onReplay = () => this.replayIntro();
     this._onAudioMute = (e) => this.updateSoundUI(e.detail.muted);
-    this._onAudioVolume = (e) => {
-      if (this.volumeSlider) {
-        this.volumeSlider.value = Math.round(e.detail.volume * 100);
-      }
-    };
     this._onKeyDown = (e) => this.handleKeyDown(e);
 
     this.initOverlayControls();
@@ -142,20 +124,12 @@ export class DragonUI {
   }
 
   /* ---------------------------------------------------------
-   * 2. HUD Controls (Sound, Volume, Roar, Fire, Replay)
+   * 2. HUD Controls (Sound, Roar, Fire)
    * --------------------------------------------------------- */
   initHUDControls() {
     // Sound Mute / Unmute Toggle
     if (this.soundBtn) {
       this.soundBtn.addEventListener('click', this._onSoundClick);
-    }
-
-    // Volume Slider
-    if (this.volumeSlider) {
-      if (this.audio) {
-        this.volumeSlider.value = Math.round(this.audio.getVolume() * 100);
-      }
-      this.volumeSlider.addEventListener('input', this._onVolumeInput);
     }
 
     // Roar Button
@@ -166,11 +140,6 @@ export class DragonUI {
     // Fire Button
     if (this.fireBtn) {
       this.fireBtn.addEventListener('click', this._onFire);
-    }
-
-    // Replay Button
-    if (this.replayBtn) {
-      this.replayBtn.addEventListener('click', this._onReplay);
     }
   }
 
@@ -183,7 +152,6 @@ export class DragonUI {
     }
 
     window.addEventListener('dragon-audio-mute', this._onAudioMute);
-    window.addEventListener('dragon-audio-volume', this._onAudioVolume);
   }
 
   updateSoundUI(isMuted) {
@@ -192,14 +160,18 @@ export class DragonUI {
     if (isMuted) {
       if (this.soundIconOn) this.soundIconOn.classList.add('is-hidden');
       if (this.soundIconOff) this.soundIconOff.classList.remove('is-hidden');
-      if (this.soundLabel) this.soundLabel.textContent = 'Muted';
-      this.soundBtn.setAttribute('aria-label', 'Unmute Dragon Audio');
+      if (this.soundLabel) this.soundLabel.textContent = 'Sound Off';
+      this.soundBtn.setAttribute('aria-label', 'Sound Off');
+      this.soundBtn.setAttribute('data-tooltip', 'Sound Off');
+      this.soundBtn.setAttribute('title', 'Sound Off');
       this.soundBtn.classList.add('is-muted');
     } else {
       if (this.soundIconOn) this.soundIconOn.classList.remove('is-hidden');
       if (this.soundIconOff) this.soundIconOff.classList.add('is-hidden');
-      if (this.soundLabel) this.soundLabel.textContent = 'Sound';
-      this.soundBtn.setAttribute('aria-label', 'Mute Dragon Audio');
+      if (this.soundLabel) this.soundLabel.textContent = 'Sound On';
+      this.soundBtn.setAttribute('aria-label', 'Sound On');
+      this.soundBtn.setAttribute('data-tooltip', 'Sound On');
+      this.soundBtn.setAttribute('title', 'Sound On');
       this.soundBtn.classList.remove('is-muted');
     }
   }
@@ -246,13 +218,10 @@ export class DragonUI {
     if (this.enterBtn) this.enterBtn.removeEventListener('click', this._onEnter);
     if (this.skipBtn) this.skipBtn.removeEventListener('click', this._onSkip);
     if (this.soundBtn) this.soundBtn.removeEventListener('click', this._onSoundClick);
-    if (this.volumeSlider) this.volumeSlider.removeEventListener('input', this._onVolumeInput);
     if (this.roarBtn) this.roarBtn.removeEventListener('click', this._onRoar);
     if (this.fireBtn) this.fireBtn.removeEventListener('click', this._onFire);
-    if (this.replayBtn) this.replayBtn.removeEventListener('click', this._onReplay);
 
     window.removeEventListener('dragon-audio-mute', this._onAudioMute);
-    window.removeEventListener('dragon-audio-volume', this._onAudioVolume);
     window.removeEventListener('keydown', this._onKeyDown);
 
     delete window.__DRAGON_UI__;

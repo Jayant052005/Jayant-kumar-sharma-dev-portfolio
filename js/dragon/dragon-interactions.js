@@ -90,35 +90,10 @@ export class DragonInteractions {
 
   /* ---------------------------------------------------------
    * Accessible HUD Controls
+   * Note: Click handlers are managed by DragonUI to prevent duplicate execution.
    * --------------------------------------------------------- */
   initAccessibleControls() {
-    const roarBtn = document.getElementById('dragon-roar-btn');
-    if (roarBtn) {
-      roarBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.scene.triggerRoar();
-      });
-      roarBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.scene.triggerRoar();
-        }
-      });
-    }
-
-    const fireBtn = document.getElementById('dragon-fire-btn');
-    if (fireBtn) {
-      fireBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.scene.triggerFire();
-      });
-      fireBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.scene.triggerFire();
-        }
-      });
-    }
+    // Retained for compatibility; DragonUI manages primary click listeners cleanly
   }
 
   /* ---------------------------------------------------------

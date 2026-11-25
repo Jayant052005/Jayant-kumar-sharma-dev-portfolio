@@ -226,7 +226,7 @@ def test_phase11_master():
                     hudAria: hud.getAttribute('aria-label'),
                     enterAria: enter.getAttribute('aria-label') || enter.innerText.trim(),
                     soundAria: sound.getAttribute('aria-label'),
-                    hasAllButtons: (!!enter && !!skip && !!roar && !!fire && !!sound && !!slider && !!replay)
+                    hasAllButtons: (!!enter && !!skip && !!roar && !!fire && !!sound && !slider && !replay)
                 };
             })()""",
             "returnByValue": True
