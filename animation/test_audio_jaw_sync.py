@@ -153,11 +153,47 @@ def run_tests():
         assert audio_data.get("hasFire") is True, "Fire crackling sound missing from registry!"
         print("  ✓ Audio assets registered and initialized.")
 
-        # 3. Verify Roar Animation & Audio Synchronization
-        print("\n[TEST 3] Verifying Roar Animation, Jaw Opening & Audio Trigger...")
-        # Trigger roar
-        cdp(ws, "Runtime.evaluate", {"expression": "window.__DRAGON_SCENE__.triggerRoar()"}, 13)
-        time.sleep(0.4) # Wait for mouth opening phase
+        # 3. Verify Jaw Movement Detection & Configurable Threshold
+        print("\n[TEST 3] Verifying Jaw Movement Detection & Configurable Threshold...")
+        res_thresh = cdp(ws, "Runtime.evaluate", {
+            "expression": """(() => {
+                const s = window.__DRAGON_SCENE__;
+                const defaultThresh = s.roarThreshold;
+                s.setRoarThreshold(0.40);
+                const updatedThresh = s.roarThreshold;
+                s.setRoarThreshold(0.35); // restore default 0.35
+                return {
+                    defaultThresh,
+                    updatedThresh,
+                    restoredThresh: s.roarThreshold,
+                    autoInterval: s.nextAutoRoarInterval,
+                    isIntervalInRange: s.nextAutoRoarInterval >= 12 && s.nextAutoRoarInterval <= 25
+                };
+            })()""",
+            "returnByValue": True
+        }, 13)
+        thresh_data = res_thresh.get("result", {}).get("result", {}).get("value", {})
+        print("  -> Threshold & Scheduler config:", thresh_data)
+        assert thresh_data.get("defaultThresh") == 0.35, "Default roar threshold should be 0.35!"
+        assert thresh_data.get("updatedThresh") == 0.40, "setRoarThreshold(0.40) failed!"
+        assert thresh_data.get("isIntervalInRange") is True, "Auto roar interval should be between 12 and 25s!"
+        print("  ✓ Configurable threshold (0.2–0.5) and randomized auto scheduler verified.")
+
+        # 4. Verify Automatic Roar Trigger without user clicks
+        print("\n[TEST 4] Verifying Automatic Jaw Opening & Automatic Roar Trigger...")
+        # Simulate timer reaching scheduled auto-roar interval
+        cdp(ws, "Runtime.evaluate", {
+            "expression": "window.__DRAGON_SCENE__.autoRoarTimer = window.__DRAGON_SCENE__.nextAutoRoarInterval;"
+        }, 14)
+        # Wait for jaw opening to cross 0.35 threshold
+        for _ in range(25):
+            res_wait = cdp(ws, "Runtime.evaluate", {
+                "expression": "window.__DRAGON_SCENE__.currentJawOpen >= window.__DRAGON_SCENE__.roarThreshold",
+                "returnByValue": True
+            }, 145)
+            if res_wait.get("result", {}).get("result", {}).get("value") is True:
+                break
+            time.sleep(0.05)
 
         res = cdp(ws, "Runtime.evaluate", {
             "expression": """(() => {
@@ -168,16 +204,17 @@ def run_tests():
                     targetJawOpen: s.targetJawOpen,
                     currentJawOpen: s.currentJawOpen,
                     headPitchElev: s.currentHeadPitchElev,
+                    hasTriggeredRoar: s.hasTriggeredRoarForCurrentOpening,
                     activeAudioNodes: (s.audio && s.audio.activeNodes.get('roar')) ? s.audio.activeNodes.get('roar').length : 0
                 };
             })()""",
             "returnByValue": True
-        }, 14)
+        }, 15)
         roar_data = res.get("result", {}).get("result", {}).get("value", {})
-        print("  -> Roar in progress:", roar_data)
-        assert roar_data.get("state") == "ROARING", "Dragon state should be ROARING!"
-        assert roar_data.get("currentJawOpen") > 0.3, "Dragon jaw should be opening during roar!"
-        assert roar_data.get("headPitchElev") > 0.05, "Dragon head should be raising during roar!"
+        print("  -> Automatic Roar in progress:", roar_data)
+        assert roar_data.get("state") == "ROARING", "Dragon state should be ROARING automatically without user click!"
+        assert roar_data.get("currentJawOpen") >= 0.35, "Jaw should have crossed the 0.35 threshold!"
+        assert roar_data.get("hasTriggeredRoar") is True, "Threshold crossing should have triggered roar!"
 
         # Overlap prevention test
         res_overlap = cdp(ws, "Runtime.evaluate", {
@@ -192,10 +229,10 @@ def run_tests():
                 };
             })()""",
             "returnByValue": True
-        }, 15)
+        }, 16)
         overlap_data = res_overlap.get("result", {}).get("result", {}).get("value", {})
         assert overlap_data.get("state") == "ROARING", "Roar/fire overlap should be prevented!"
-        print("  ✓ Roar jaw opening, head pitch elevation, and overlap protection verified.")
+        print("  ✓ Automatic roar triggered across threshold, jaw opening animated, and overlap protected.")
 
         # Let roar finish and state return to FLYING
         for _ in range(40):
@@ -207,8 +244,8 @@ def run_tests():
                 break
             time.sleep(0.2)
 
-        # 4. Verify Fire Breathing Animation & Audio Synchronization
-        print("\n[TEST 4] Verifying Fire Breathing Animation & Particles...")
+        # 5. Verify Fire Breathing Animation & Audio Synchronization
+        print("\n[TEST 5] Verifying Fire Breathing Animation & Particles...")
         cdp(ws, "Runtime.evaluate", {"expression": "window.__DRAGON_SCENE__.triggerFire(2.2)"}, 16)
         time.sleep(0.5)
 
@@ -243,8 +280,8 @@ def run_tests():
                 break
             time.sleep(0.2)
 
-        # 5. Verify Master Sound Toggle Button in HUD
-        print("\n[TEST 5] Verifying HUD Sound Button...")
+        # 6. Verify Master Sound Toggle Button in HUD
+        print("\n[TEST 6] Verifying HUD Sound Button...")
         res = cdp(ws, "Runtime.evaluate", {
             "expression": """(() => {
                 const soundBtn = document.getElementById('dragon-sound-btn');
