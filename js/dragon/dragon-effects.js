@@ -129,9 +129,10 @@ export class DragonEffects {
   /* ---------------------------------------------------------
    * 1. Red Eye Glow
    * --------------------------------------------------------- */
-  attachEyeGlow(headBone, dragonPivot) {
+  attachEyeGlow(headBone, dragonPivot, jawBone = null) {
     this.headBone = headBone;
     this.dragonPivot = dragonPivot;
+    this.jawBone = jawBone;
 
     if (!this.headBone) return;
 
@@ -447,12 +448,13 @@ export class DragonEffects {
           this.isFiring = false;
         }
 
-        // Get mouth/snout origin from head bone
-        if (this.headBone) {
-          this.headBone.getWorldPosition(this._tempHeadPos);
-          this.headBone.getWorldDirection(this._tempHeadDir);
-          // Adjust mouth forward vector
-          this._tempHeadPos.addScaledVector(this._tempHeadDir, 0.6);
+        // Get mouth/snout origin from jaw bone or head bone
+        const originBone = this.jawBone || this.headBone;
+        if (originBone) {
+          originBone.getWorldPosition(this._tempHeadPos);
+          originBone.getWorldDirection(this._tempHeadDir);
+          // Adjust mouth forward vector slightly outward from jaws
+          this._tempHeadPos.addScaledVector(this._tempHeadDir, 0.45);
           this.fireLight.position.copy(this._tempHeadPos);
           this.fireLight.intensity = Math.min(6.0, this.fireTimer * 3.5);
         }

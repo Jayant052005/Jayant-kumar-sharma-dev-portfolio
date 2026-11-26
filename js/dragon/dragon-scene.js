@@ -12,6 +12,14 @@ import { DragonInteractions } from './dragon-interactions.js';
 import { DragonScrollController } from './dragon-scroll.js';
 import { DragonUI } from './dragon-ui.js';
 
+export const DragonState = {
+  IDLE: 'IDLE',
+  FLYING: 'FLYING',
+  ROARING: 'ROARING',
+  FIRE_BREATHING: 'FIRE_BREATHING',
+  RECOVERING: 'RECOVERING'
+};
+
 export class DragonScene {
   constructor() {
     this.container = document.getElementById('dragon-canvas-container');
@@ -35,6 +43,20 @@ export class DragonScene {
     this.dragonBones = null;
     this.headBone = null;
     this.headCluster = [];
+    this.jawBone = null;
+    this.jawChinBone = null;
+    this.mouthSnoutBone = null;
+
+    // Animation state machine & procedural jaw rig
+    this.state = DragonState.FLYING;
+    this.stateTimer = 0;
+    this.stateDuration = 0;
+    this.actionCooldown = 0;
+    this.currentJawOpen = 0.0;
+    this.targetJawOpen = 0.0;
+    this.currentHeadPitchElev = 0.0;
+    this.targetHeadPitchElev = 0.0;
+    this.fireTotalDuration = 2.4;
     this.cameraTarget = new THREE.Vector3(0, 0, 0);
     this.currentCameraTarget = new THREE.Vector3(0, 0, 0);
     this.targetCameraPos = new THREE.Vector3(0, 0.5, 9.5);
@@ -212,6 +234,10 @@ export class DragonScene {
 
         // Identify primary head bone and head cluster bones (horns, snout, eyes, whiskers)
         this.headBone = this.dragonBones.find(b => b.name === 'drgon_025') || null;
+        this.jawBone = this.dragonBones.find(b => b.name === 'drgon_064') || null;
+        this.jawChinBone = this.dragonBones.find(b => b.name === 'drgon_065') || null;
+        this.mouthSnoutBone = this.dragonBones.find(b => b.name === 'drgon_054') || null;
+
         if (this.headBone) {
           this.headCluster = this.dragonBones.filter(b => {
             return b === this.headBone ||
@@ -223,9 +249,9 @@ export class DragonScene {
         // Initialize Animation Controller with Take 001
         this.animationController = new DragonAnimationController(result.rawScene, result.animations);
 
-        // Attach visual effects (Phase 5: red eye glow)
+        // Attach visual effects (Phase 5: red eye glow + jaw reference for flame emitter)
         if (this.effects) {
-          this.effects.attachEyeGlow(this.headBone, this.dragonPivot);
+          this.effects.attachEyeGlow(this.headBone, this.dragonPivot, this.jawBone);
         }
 
         // Hide loading indicator with smooth fade
@@ -312,25 +338,59 @@ export class DragonScene {
     }
   }
 
-  triggerFire(duration = 2.2) {
-    if (this.effects) {
-      this.effects.triggerFire(duration);
+  triggerFire(duration = 2.4) {
+    if (this.state === DragonState.ROARING || this.state === DragonState.FIRE_BREATHING) {
+      return;
     }
+
+    this.fireTotalDuration = Math.max(1.8, Math.min(3.5, duration));
+    this.state = DragonState.FIRE_BREATHING;
+    this.stateTimer = 0;
+
+    // Trigger visual flame stream and camera shake
+    if (this.effects) {
+      this.effects.triggerFire(this.fireTotalDuration);
+      this.effects.setEyeGlowIntensity(2.2);
+      setTimeout(() => {
+        if (this.effects) this.effects.setEyeGlowIntensity(1.0);
+      }, (this.fireTotalDuration + 0.3) * 1000);
+    }
+
+    // Synchronize fire crackling and flame burst audio with smooth fade
     if (this.audio) {
-      this.audio.play('fire_blast');
+      this.audio.play('fire_blast', { volume: 0.55 });
+      this.audio.play('fire_crackling', { loop: true, fadeIn: 0.25, volume: 0.45 });
+
+      // Smooth fade-out when fire breathing finishes
+      setTimeout(() => {
+        if (this.audio) {
+          this.audio.stopWithFade('fire_crackling', 0.4);
+        }
+      }, Math.max(100, (this.fireTotalDuration - 0.45) * 1000));
     }
   }
 
   triggerRoar() {
-    if (this.audio) {
-      this.audio.play('roar');
+    if (this.state === DragonState.ROARING || this.state === DragonState.FIRE_BREATHING) {
+      return;
     }
+
+    this.state = DragonState.ROARING;
+    this.stateTimer = 0;
+
+    // Synchronize roar audio as mouth begins opening (~200ms)
+    setTimeout(() => {
+      if (this.audio && this.state === DragonState.ROARING) {
+        this.audio.play('roar', { volume: 1.0 });
+      }
+    }, 200);
+
     if (this.effects) {
-      this.effects.triggerCameraShake(0.20, 0.9);
-      this.effects.setEyeGlowIntensity(2.4);
+      this.effects.triggerCameraShake(0.22, 1.2);
+      this.effects.setEyeGlowIntensity(2.6);
       setTimeout(() => {
         if (this.effects) this.effects.setEyeGlowIntensity(1.0);
-      }, 1600);
+      }, 2400);
     }
   }
 
@@ -349,6 +409,136 @@ export class DragonScene {
   triggerCameraShake(intensity = 0.15, duration = 0.5) {
     if (this.effects) {
       this.effects.triggerCameraShake(intensity, duration);
+    }
+  }
+
+  /* ---------------------------------------------------------
+   * Continuous Organic Movement & Procedural Breathing
+   * --------------------------------------------------------- */
+  updateContinuousMovement(delta) {
+    if (this.isReducedMotion) return;
+    const time = this.clock.getElapsedTime();
+
+    // Gentle chest & body breathing cycle
+    if (this.dragonPivot && this.basePivotPos) {
+      const breath = Math.sin(time * 1.6) * 0.025;
+      this.dragonPivot.position.y += breath;
+    }
+  }
+
+  /* ---------------------------------------------------------
+   * Jaw Rig Animation & Action State Machine
+   * --------------------------------------------------------- */
+  updateAnimationStates(delta) {
+    if (this.actionCooldown > 0) {
+      this.actionCooldown -= delta;
+    }
+
+    switch (this.state) {
+      case DragonState.ROARING: {
+        this.stateTimer += delta;
+        const t = this.stateTimer;
+        const totalDur = 3.45; // Match 3.45s roar audio
+
+        // Phase 1: Mouth opening (400-700ms) & Head raising
+        if (t < 0.5) {
+          const p = t / 0.5;
+          const ease = 1 - Math.pow(1 - p, 3);
+          this.targetJawOpen = ease * 0.85;
+          this.targetHeadPitchElev = ease * 0.24; // ~14 degrees pitch up
+        }
+        // Phase 2: Mouth holding (800-1200ms) & organic roar vibration
+        else if (t < 2.85) {
+          const tremor = Math.sin(t * 30.0) * 0.04 + Math.sin(t * 16.0) * 0.02;
+          this.targetJawOpen = 0.85 + tremor;
+          this.targetHeadPitchElev = 0.24 + Math.sin(t * 8.0) * 0.02;
+        }
+        // Phase 3: Mouth closing (400-600ms) & Head returning
+        else if (t < totalDur) {
+          const p = (t - 2.85) / (totalDur - 2.85);
+          const ease = p * p;
+          this.targetJawOpen = 0.85 * (1 - ease);
+          this.targetHeadPitchElev = 0.24 * (1 - ease);
+        }
+        // Phase 4: Transition to recovering
+        else {
+          this.state = DragonState.RECOVERING;
+          this.stateTimer = 0;
+          this.stateDuration = 0.4;
+          this.targetJawOpen = 0;
+          this.targetHeadPitchElev = 0;
+        }
+        break;
+      }
+
+      case DragonState.FIRE_BREATHING: {
+        this.stateTimer += delta;
+        const t = this.stateTimer;
+        const totalDur = this.fireTotalDuration || 2.4;
+
+        // Phase 1: Mouth opens wider than roar (0.0s - 0.5s)
+        if (t < 0.5) {
+          const p = t / 0.5;
+          const ease = 1 - Math.pow(1 - p, 3);
+          this.targetJawOpen = ease * 1.05; // Full open for fire stream
+          this.targetHeadPitchElev = ease * 0.28;
+        }
+        // Phase 2: Fire breath stream (0.5s to totalDur - 0.5s)
+        else if (t < totalDur - 0.5) {
+          const flameFlicker = Math.sin(t * 22.0) * 0.03;
+          this.targetJawOpen = 1.05 + flameFlicker;
+          this.targetHeadPitchElev = 0.28;
+        }
+        // Phase 3: Mouth closing smoothly (400-600ms)
+        else if (t < totalDur) {
+          const p = (t - (totalDur - 0.5)) / 0.5;
+          const ease = p * p;
+          this.targetJawOpen = 1.05 * (1 - ease);
+          this.targetHeadPitchElev = 0.28 * (1 - ease);
+        }
+        // Phase 4: Recovering
+        else {
+          this.state = DragonState.RECOVERING;
+          this.stateTimer = 0;
+          this.stateDuration = 0.4;
+          this.targetJawOpen = 0;
+          this.targetHeadPitchElev = 0;
+        }
+        break;
+      }
+
+      case DragonState.RECOVERING: {
+        this.stateTimer += delta;
+        if (this.stateTimer >= this.stateDuration) {
+          this.state = DragonState.FLYING;
+          this.stateTimer = 0;
+          this.actionCooldown = 1.2; // 1.2s cooldown prevents repetitive robotic triggers
+        }
+        break;
+      }
+
+      default: {
+        // Idle/Flying: mouth naturally closed
+        this.targetJawOpen = 0;
+        this.targetHeadPitchElev = 0;
+        break;
+      }
+    }
+
+    // Smooth exponential damping
+    const lerpFactor = 1.0 - Math.exp(-14.0 * delta);
+    this.currentJawOpen += (this.targetJawOpen - this.currentJawOpen) * lerpFactor;
+    this.currentHeadPitchElev += (this.targetHeadPitchElev - this.currentHeadPitchElev) * lerpFactor;
+
+    // Apply jaw rotation strictly along the bilateral hinge axis (local Y axis)
+    // Rotating around the local Y axis maintains 100% bilateral facial symmetry across Y = 0
+    if (this.jawBone) {
+      this.jawBone.rotation.y += this.currentJawOpen * 0.38;
+    }
+
+    // Apply head elevation along the bilateral pitch axis without lateral tilting
+    if (this.headBone && this.currentHeadPitchElev > 0.001) {
+      this.headBone.rotation.y += this.currentHeadPitchElev * 0.15;
     }
   }
 
@@ -557,6 +747,12 @@ export class DragonScene {
     if (this.animationController) {
       this.animationController.update(delta);
     }
+
+    // Continuous natural movement (breathing, head wander)
+    this.updateContinuousMovement(delta);
+
+    // Mouth, jaw, roar & fire breath animation state machine
+    this.updateAnimationStates(delta);
 
     // Scroll interaction update (Phase 8: cinematic camera & dragon repositioning)
     if (this.scrollController) {

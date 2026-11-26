@@ -1,7 +1,8 @@
 /**
- * Dragon Audio Management System (Phase 6)
+ * Dragon Audio Management System (Phase 6 & Audio Integration)
  * Handles high-fidelity audio playback, sound effects, ambience, volume,
- * muting, channel concurrency management, and procedural synthesis fallback.
+ * muting, channel concurrency management, smooth fade transitions,
+ * and procedural synthesis fallback.
  */
 
 export class DragonAudio {
@@ -17,16 +18,46 @@ export class DragonAudio {
     const savedVol = localStorage.getItem('portfolio_dragon_volume');
     this.masterVolume = savedVol !== null ? Math.min(1, Math.max(0, parseFloat(savedVol))) : 0.75;
 
-    // Sound registry
+    // Sound registry with primary provided audio assets and procedural companions
     this.soundDefs = {
-      growl: { path: 'assets/audio/growl.wav', priority: 7, maxChannels: 1 },
-      roar: { path: 'assets/audio/roar.wav', priority: 10, maxChannels: 1 },
-      breath: { path: 'assets/audio/breath.wav', priority: 3, maxChannels: 1 },
-      fire_blast: { path: 'assets/audio/fire_blast.wav', priority: 8, maxChannels: 1 },
-      fire_crackle: { path: 'assets/audio/fire_crackle.wav', priority: 2, maxChannels: 1 },
-      whoosh: { path: 'assets/audio/whoosh.wav', priority: 5, maxChannels: 2 },
-      impact: { path: 'assets/audio/impact.wav', priority: 9, maxChannels: 1 },
-      ambience: { path: 'assets/audio/ambience.wav', priority: 1, maxChannels: 1 }
+      roar: {
+        path: 'assets/audio/dragon-studio-epic-dragon-roar-364481.mp3',
+        fallbackPath: 'public/audio/dragon-roar.mp3',
+        priority: 10,
+        maxChannels: 1,
+        volume: 1.0 // 100% reference level
+      },
+      fire_crackling: {
+        path: 'assets/audio/fire-crackling.mp3',
+        fallbackPath: 'public/audio/fire-crackling.mp3',
+        priority: 8,
+        maxChannels: 1,
+        volume: 0.45 // 35–55% suggested level
+      },
+      fire_blast: {
+        path: '', // Procedural flame whoosh burst
+        priority: 7,
+        maxChannels: 1,
+        volume: 0.55 // 50–65% suggested level
+      },
+      breath: {
+        path: '', // Procedural low-frequency dragon breathing
+        priority: 2,
+        maxChannels: 1,
+        volume: 0.20 // 15–25% suggested level
+      },
+      ambience: {
+        path: '', // Procedural subtle ambient atmosphere
+        priority: 1,
+        maxChannels: 1,
+        volume: 0.15 // 10–20% suggested level
+      },
+      growl: {
+        path: '', // Procedural subtle growl
+        priority: 6,
+        maxChannels: 1,
+        volume: 0.50
+      }
     };
 
     this.audioBuffers = new Map();
@@ -82,20 +113,30 @@ export class DragonAudio {
   }
 
   /* ---------------------------------------------------------
-   * Sound Loading & Missing-File Handling
+   * Sound Loading & Missing-File Fallback Handling
    * --------------------------------------------------------- */
   preloadSounds() {
     for (const [name, def] of Object.entries(this.soundDefs)) {
-      this.loadSound(name, def.path);
+      if (def.path) {
+        this.loadSound(name, def.path, def.fallbackPath);
+      }
     }
   }
 
-  loadSound(name, path) {
+  loadSound(name, path, fallbackPath) {
     if (!this.ctx) return;
 
     fetch(path)
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          if (fallbackPath) {
+            return fetch(fallbackPath).then((r) => {
+              if (!r.ok) throw new Error(`HTTP ${r.status}`);
+              return r.arrayBuffer();
+            });
+          }
+          throw new Error(`HTTP ${res.status}`);
+        }
         return res.arrayBuffer();
       })
       .then((buffer) => this.ctx.decodeAudioData(buffer))
@@ -103,7 +144,6 @@ export class DragonAudio {
         this.audioBuffers.set(name, decoded);
       })
       .catch((err) => {
-        // Missing-file handling: log gracefully and synthesize procedural audio fallback
         console.warn(`[DragonAudio] Audio file for '${name}' at '${path}' not reachable (${err.message}). Using Web Audio procedural synthesizer.`);
         this.audioBuffers.set(name, 'PROCEDURAL_SYNTH');
       });
@@ -132,8 +172,28 @@ export class DragonAudio {
     }
   }
 
+  stopWithFade(name, fadeDuration = 0.35) {
+    const list = this.activeNodes.get(name);
+    if (!list || list.length === 0 || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    list.forEach((src) => {
+      if (src._gainNode) {
+        src._gainNode.gain.cancelScheduledValues(now);
+        src._gainNode.gain.setValueAtTime(src._gainNode.gain.value, now);
+        src._gainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDuration);
+      }
+      setTimeout(() => {
+        try {
+          src.stop();
+          src.disconnect();
+        } catch (e) {}
+      }, (fadeDuration + 0.05) * 1000);
+    });
+    this.activeNodes.set(name, []);
+  }
+
   stopAll() {
-    for (const name of this.soundDefs) {
+    for (const name of Object.keys(this.soundDefs)) {
       this.stop(name);
     }
   }
@@ -168,28 +228,37 @@ export class DragonAudio {
 
     // Priority ducking: If playing a roar, duck background ambience/breathing
     if (name === 'roar') {
-      this.duckBackgroundSounds(1.8);
+      this.duckBackgroundSounds(2.5);
     }
 
     const buffer = this.audioBuffers.get(name);
     if (buffer && buffer !== 'PROCEDURAL_SYNTH') {
-      return this.playBuffer(name, buffer, options);
+      return this.playBuffer(name, buffer, options, def.volume);
     } else {
-      return this.playProceduralFallback(name, options);
+      return this.playProceduralFallback(name, options, def.volume);
     }
   }
 
-  playBuffer(name, buffer, options) {
+  playBuffer(name, buffer, options, defVolume = 1.0) {
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = Boolean(options.loop);
 
     const gainNode = this.ctx.createGain();
-    const vol = typeof options.volume === 'number' ? options.volume : 1.0;
-    gainNode.gain.setValueAtTime(vol, this.ctx.currentTime);
+    const targetVol = typeof options.volume === 'number' ? options.volume : defVolume;
+
+    const now = this.ctx.currentTime;
+    if (options.fadeIn && options.fadeIn > 0) {
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.linearRampToValueAtTime(targetVol, now + options.fadeIn);
+    } else {
+      gainNode.gain.setValueAtTime(targetVol, now);
+    }
 
     source.connect(gainNode);
     gainNode.connect(this.masterGain);
+
+    source._gainNode = gainNode;
 
     source.onended = () => {
       this.cleanupActiveNode(name, source);
@@ -216,15 +285,14 @@ export class DragonAudio {
   duckBackgroundSounds(duration) {
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
-    // Duck ambience and breath if active
     ['ambience', 'breath'].forEach((bgName) => {
       const list = this.activeNodes.get(bgName);
       if (list && list.length > 0) {
         list.forEach((src) => {
           if (src._gainNode) {
             src._gainNode.gain.cancelScheduledValues(now);
-            src._gainNode.gain.setValueAtTime(0.2, now);
-            src._gainNode.gain.linearRampToValueAtTime(1.0, now + duration);
+            src._gainNode.gain.setValueAtTime(0.15, now);
+            src._gainNode.gain.linearRampToValueAtTime(0.20, now + duration);
           }
         });
       }
@@ -234,17 +302,16 @@ export class DragonAudio {
   /* ---------------------------------------------------------
    * Procedural Audio Synthesis Fallback (Web Audio API)
    * --------------------------------------------------------- */
-  playProceduralFallback(name, options = {}) {
+  playProceduralFallback(name, options = {}, defVolume = 1.0) {
     if (!this.ctx) return null;
     const now = this.ctx.currentTime;
 
     const gain = this.ctx.createGain();
     gain.connect(this.masterGain);
-    const vol = typeof options.volume === 'number' ? options.volume : 1.0;
+    const vol = typeof options.volume === 'number' ? options.volume : defVolume;
 
     switch (name) {
       case 'roar': {
-        // Multi-oscillator FM roar with resonant low-pass filter
         const osc = this.ctx.createOscillator();
         const oscSub = this.ctx.createOscillator();
         const filter = this.ctx.createBiquadFilter();
@@ -252,18 +319,18 @@ export class DragonAudio {
         osc.type = 'sawtooth';
         oscSub.type = 'triangle';
 
-        osc.frequency.setValueAtTime(120, now);
-        osc.frequency.exponentialRampToValueAtTime(45, now + 1.8);
-        oscSub.frequency.setValueAtTime(60, now);
-        oscSub.frequency.exponentialRampToValueAtTime(28, now + 1.8);
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 2.2);
+        oscSub.frequency.setValueAtTime(65, now);
+        oscSub.frequency.exponentialRampToValueAtTime(28, now + 2.2);
 
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600, now);
+        filter.frequency.setValueAtTime(650, now);
         filter.Q.setValueAtTime(4.0, now);
 
         gain.gain.setValueAtTime(0.01, now);
-        gain.gain.linearRampToValueAtTime(0.85 * vol, now + 0.15);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+        gain.gain.linearRampToValueAtTime(0.9 * vol, now + 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
 
         osc.connect(filter);
         oscSub.connect(filter);
@@ -271,43 +338,68 @@ export class DragonAudio {
 
         osc.start(now);
         oscSub.start(now);
-        osc.stop(now + 2.0);
-        oscSub.stop(now + 2.0);
+        osc.stop(now + 3.2);
+        oscSub.stop(now + 3.2);
         break;
       }
 
+      case 'fire_crackling':
       case 'fire_blast': {
-        // Pink noise burst with sweeping filter
-        const bufferSize = this.ctx.sampleRate * 1.5;
+        // Bandpass filtered noise burst for fire ignition / crackle
+        const bufferSize = Math.floor(this.ctx.sampleRate * 2.0);
         const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
           output[i] = Math.random() * 2 - 1;
         }
 
-        const whiteNoise = this.ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        if (options.loop) noise.loop = true;
 
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(400, now);
-        filter.frequency.exponentialRampToValueAtTime(120, now + 1.4);
-        filter.Q.setValueAtTime(2.0, now);
+        filter.frequency.setValueAtTime(500, now);
+        filter.frequency.exponentialRampToValueAtTime(150, now + 1.8);
+        filter.Q.setValueAtTime(1.8, now);
 
-        gain.gain.setValueAtTime(0.8 * vol, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        if (options.fadeIn && options.fadeIn > 0) {
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.7 * vol, now + options.fadeIn);
+        } else {
+          gain.gain.setValueAtTime(0.7 * vol, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+        }
 
-        whiteNoise.connect(filter);
+        noise.connect(filter);
         filter.connect(gain);
-        whiteNoise.start(now);
-        whiteNoise.stop(now + 1.5);
+        noise.start(now);
+        if (!options.loop) {
+          noise.stop(now + 2.0);
+        }
+        break;
+      }
+
+      case 'breath': {
+        const osc = this.ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(55, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 2.0);
+
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.25 * vol, now + 0.8);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+        osc.connect(gain);
+        osc.start(now);
+        osc.stop(now + 2.0);
         break;
       }
 
       case 'growl': {
         const osc = this.ctx.createOscillator();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(75, now);
+        osc.frequency.setValueAtTime(80, now);
         osc.frequency.linearRampToValueAtTime(55, now + 1.4);
 
         const filter = this.ctx.createBiquadFilter();
@@ -326,7 +418,6 @@ export class DragonAudio {
       }
 
       default: {
-        // Generic subtle tone for impact / whoosh / breath
         const osc = this.ctx.createOscillator();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(90, now);
@@ -402,11 +493,15 @@ export class DragonAudio {
   }
 
   dispose() {
-    this.activeNodes.forEach((node) => {
-      try {
-        if (typeof node.stop === 'function') node.stop();
-        if (typeof node.disconnect === 'function') node.disconnect();
-      } catch (e) {}
+    this.activeNodes.forEach((list) => {
+      if (Array.isArray(list)) {
+        list.forEach((node) => {
+          try {
+            if (typeof node.stop === 'function') node.stop();
+            if (typeof node.disconnect === 'function') node.disconnect();
+          } catch (e) {}
+        });
+      }
     });
     this.activeNodes.clear();
 
