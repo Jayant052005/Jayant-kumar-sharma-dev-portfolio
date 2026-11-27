@@ -61,8 +61,11 @@ export class DragonAudio {
     };
 
     this.audioBuffers = new Map();
+    this.loadPromises = new Map();
     this.activeNodes = new Map(); // soundName -> Array of active source nodes
     this.isInitialized = false;
+    this.lastFireCracklingStartTime = 0;
+    this.lastClickFireTime = 0;
 
     this.initAudioContext();
     this.setupUserGestureUnlock();
@@ -124,9 +127,9 @@ export class DragonAudio {
   }
 
   loadSound(name, path, fallbackPath) {
-    if (!this.ctx) return;
+    if (!this.ctx) return null;
 
-    fetch(path)
+    const promise = fetch(path)
       .then((res) => {
         if (!res.ok) {
           if (fallbackPath) {
@@ -142,11 +145,16 @@ export class DragonAudio {
       .then((buffer) => this.ctx.decodeAudioData(buffer))
       .then((decoded) => {
         this.audioBuffers.set(name, decoded);
+        return decoded;
       })
       .catch((err) => {
         console.warn(`[DragonAudio] Audio file for '${name}' at '${path}' not reachable (${err.message}). Using Web Audio procedural synthesizer.`);
         this.audioBuffers.set(name, 'PROCEDURAL_SYNTH');
+        return 'PROCEDURAL_SYNTH';
       });
+
+    this.loadPromises.set(name, promise);
+    return promise;
   }
 
   /* ---------------------------------------------------------
@@ -230,6 +238,9 @@ export class DragonAudio {
     if (name === 'roar') {
       this.duckBackgroundSounds(2.5);
     }
+    if (name === 'fire_crackling') {
+      this.lastFireCracklingStartTime = performance.now();
+    }
 
     const buffer = this.audioBuffers.get(name);
     if (buffer && buffer !== 'PROCEDURAL_SYNTH') {
@@ -239,7 +250,7 @@ export class DragonAudio {
     }
   }
 
-  playBuffer(name, buffer, options, defVolume = 1.0) {
+  playBuffer(name, buffer, options = {}, defVolume = 1.0) {
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = Boolean(options.loop);
@@ -248,11 +259,24 @@ export class DragonAudio {
     const targetVol = typeof options.volume === 'number' ? options.volume : defVolume;
 
     const now = this.ctx.currentTime;
-    if (options.fadeIn && options.fadeIn > 0) {
+    const fadeIn = Math.max(0, options.fadeIn || 0);
+    const fadeOut = Math.max(0, options.fadeOut || 0);
+    const offset = Math.max(0, options.offset || 0);
+    const segDuration = typeof options.duration === 'number' && options.duration > 0
+      ? Math.min(options.duration, Math.max(0.05, buffer.duration - offset))
+      : null;
+
+    if (fadeIn > 0) {
       gainNode.gain.setValueAtTime(0.0001, now);
-      gainNode.gain.linearRampToValueAtTime(targetVol, now + options.fadeIn);
+      gainNode.gain.linearRampToValueAtTime(targetVol, now + fadeIn);
     } else {
       gainNode.gain.setValueAtTime(targetVol, now);
+    }
+
+    if (segDuration !== null && fadeOut > 0 && !source.loop) {
+      const fadeStart = now + Math.max(fadeIn, segDuration - fadeOut);
+      gainNode.gain.setValueAtTime(targetVol, fadeStart);
+      gainNode.gain.linearRampToValueAtTime(0.0001, now + segDuration);
     }
 
     source.connect(gainNode);
@@ -274,12 +298,158 @@ export class DragonAudio {
     }
     list.push(source);
 
-    source.start(0);
+    if (segDuration !== null && !source.loop) {
+      source.start(now, offset, segDuration + 0.03);
+    } else if (offset > 0) {
+      source.start(now, offset);
+    } else {
+      source.start(now);
+    }
 
     // Dispatch play event
     window.dispatchEvent(new CustomEvent('dragon-audio-play', { detail: { sound: name } }));
 
     return source;
+  }
+
+  /**
+   * Play a short, organically varied fire crackling segment from the provided recording
+   * (`soundreality-fire-crackling-528620.mp3` -> `assets/audio/fire-crackling.mp3`)
+   * layered with a subtle flame ignition whoosh for page-wide interactive clicks.
+   */
+  playClickFire(options = {}) {
+    if (this.isMutedState) return null;
+    if (!this.ctx) this.initAudioContext();
+    if (!this.ctx) return null;
+
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().then(() => {
+        this.isInitialized = true;
+      }).catch(() => {});
+    } else {
+      this.isInitialized = true;
+    }
+
+    const nowMs = performance.now();
+
+    // Avoid duplicate crackling if hero dragon fire breath just started on this same click
+    const dragonFireList = this.activeNodes.get('fire_crackling');
+    if (dragonFireList && dragonFireList.length > 0 && (nowMs - this.lastFireCracklingStartTime < 150)) {
+      return null;
+    }
+
+    // Rapid-click throttle prevents audio glitching during fast spam clicking
+    if (nowMs - this.lastClickFireTime < 90) {
+      return null;
+    }
+    this.lastClickFireTime = nowMs;
+
+    // Limit max simultaneous click-fire streams cleanly (smoothly fade out oldest)
+    const maxClickChannels = 3;
+    let clickList = this.activeNodes.get('click_fire') || [];
+    while (clickList.length >= maxClickChannels) {
+      const oldest = clickList.shift();
+      this.fadeOutNode(oldest, 0.08);
+    }
+
+    // Scale gain slightly during concurrent clicks to avoid unpleasant clipping
+    const overlapScale = clickList.length === 0 ? 1.0 : clickList.length === 1 ? 0.68 : 0.48;
+    const baseVolume = typeof options.volume === 'number' ? options.volume : 0.50;
+    const targetVol = baseVolume * overlapScale;
+    const segmentDuration = typeof options.duration === 'number' ? options.duration : 1.9;
+
+    // Subtle tactile flame ignition whoosh at click instant (complementing primary crackle)
+    this.playClickIgnitionWhoosh(overlapScale);
+
+    const startSegmentFromBuffer = (buffer) => {
+      if (this.isMutedState || !this.ctx) return null;
+      const maxOffset = Math.max(0, buffer.duration - segmentDuration - 0.1);
+      const randomOffset = maxOffset > 0.2 ? Math.random() * maxOffset : 0;
+      return this.playBuffer('click_fire', buffer, {
+        volume: targetVol,
+        offset: randomOffset,
+        duration: segmentDuration,
+        fadeIn: 0.06,
+        fadeOut: 0.65,
+        loop: false
+      });
+    };
+
+    const buffer = this.audioBuffers.get('fire_crackling');
+    if (buffer && buffer !== 'PROCEDURAL_SYNTH') {
+      return startSegmentFromBuffer(buffer);
+    }
+
+    // If buffer is still loading on very first click, wait briefly or fall back cleanly
+    const inFlight = this.loadPromises.get('fire_crackling');
+    if (inFlight && buffer !== 'PROCEDURAL_SYNTH') {
+      const clickAt = nowMs;
+      inFlight.then((decoded) => {
+        if (decoded && decoded !== 'PROCEDURAL_SYNTH' && (performance.now() - clickAt) < 350) {
+          startSegmentFromBuffer(decoded);
+        } else if (!decoded || decoded === 'PROCEDURAL_SYNTH') {
+          this.playProceduralFallback('fire_crackling', { volume: targetVol * 0.7, fadeIn: 0.05 }, targetVol);
+        }
+      });
+      return 'PENDING_BUFFER';
+    }
+
+    return this.playProceduralFallback('fire_crackling', { volume: targetVol * 0.7, fadeIn: 0.05 }, targetVol);
+  }
+
+  fadeOutNode(source, fadeDuration = 0.08) {
+    if (!source || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    try {
+      if (source._gainNode) {
+        source._gainNode.gain.cancelScheduledValues(now);
+        source._gainNode.gain.setValueAtTime(source._gainNode.gain.value, now);
+        source._gainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDuration);
+      }
+      source.stop(now + fadeDuration + 0.02);
+    } catch (e) {}
+  }
+
+  playClickIgnitionWhoosh(overlapScale = 1.0) {
+    if (!this.ctx || !this.masterGain || this.isMutedState) return;
+    const now = this.ctx.currentTime;
+    const dur = 0.24;
+    const sampleCount = Math.floor(this.ctx.sampleRate * dur);
+    const noiseBuffer = this.ctx.createBuffer(1, sampleCount, this.ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < sampleCount; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(920, now);
+    filter.frequency.exponentialRampToValueAtTime(220, now + dur);
+    filter.Q.setValueAtTime(1.4, now);
+
+    const gain = this.ctx.createGain();
+    const peak = 0.16 * overlapScale;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(peak, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    noise.onended = () => {
+      try {
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      } catch (e) {}
+    };
+
+    noise.start(now);
+    noise.stop(now + dur + 0.02);
   }
 
   duckBackgroundSounds(duration) {

@@ -7,6 +7,7 @@ import { initNavigation } from './navigation.js';
 import { initAnimations } from './animations.js';
 import { initContact } from './contact.js';
 import { initDragonScene } from './dragon/dragon-scene.js?v=10';
+import { initClickFire } from './click-fire.js?v=10';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Update copyright year dynamically
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initAnimations();
   initContact();
+  initClickFire();
 
   // Performance Optimization: Defer 3D Dragon initialization for optimal Core Web Vitals (TBT < 50ms)
   let dragonInitialized = false;

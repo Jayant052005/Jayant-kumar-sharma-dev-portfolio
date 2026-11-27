@@ -57,6 +57,21 @@ export class DragonScene {
     this.currentHeadPitchElev = 0.0;
     this.targetHeadPitchElev = 0.0;
     this.fireTotalDuration = 2.4;
+
+    // Automatic jaw detection & roar audio trigger configuration
+    this.roarThreshold = 0.35;
+    this.prevJawOpen = 0.0;
+    this.hasTriggeredRoarForCurrentOpening = false;
+    this.autoRoarTimer = 0.0;
+    this.nextAutoRoarInterval = this.getRandomAutoRoarInterval();
+    this.roarOpenDuration = 0.45;
+
+    // Sustained jaw movement tracking (triggers roar after 0.2s of jaw motion until jaw stops)
+    this.jawMovementDuration = 0.0;
+    this.jawMovementThreshold = 0.20; // 0.2s continuous movement threshold
+    this.jawRestThreshold = 0.08;     // Rest threshold
+    this.isRoaringActive = false;
+
     this.cameraTarget = new THREE.Vector3(0, 0, 0);
     this.currentCameraTarget = new THREE.Vector3(0, 0, 0);
     this.targetCameraPos = new THREE.Vector3(0, 0.5, 9.5);
@@ -241,8 +256,8 @@ export class DragonScene {
         if (this.headBone) {
           this.headCluster = this.dragonBones.filter(b => {
             return b === this.headBone ||
-                   b.parent === this.headBone ||
-                   (b.parent && b.parent.parent === this.headBone);
+              b.parent === this.headBone ||
+              (b.parent && b.parent.parent === this.headBone);
           });
         }
 
@@ -370,6 +385,46 @@ export class DragonScene {
     }
   }
 
+  setRoarThreshold(threshold) {
+    this.roarThreshold = Math.max(0.2, Math.min(0.5, threshold));
+  }
+
+  getRoarThreshold() {
+    return this.roarThreshold;
+  }
+
+  setJawMovementThreshold(seconds) {
+    this.jawMovementThreshold = Math.max(0.05, Math.min(1.0, seconds));
+  }
+
+  getJawMovementThreshold() {
+    return this.jawMovementThreshold;
+  }
+
+  getRandomAutoRoarInterval() {
+    return 12.0 + Math.random() * 13.0; // 12.0 - 25.0 seconds
+  }
+
+  triggerRoarAudio(options = {}) {
+    if (this.audio) {
+      const loop = options.loop !== undefined ? options.loop : false;
+      this.audio.play('roar', { volume: 1.0, loop });
+    }
+    if (this.effects) {
+      this.effects.triggerCameraShake(0.22, 1.2);
+      this.effects.setEyeGlowIntensity(2.6);
+    }
+  }
+
+  stopRoarAudio(fadeDuration = 0.25) {
+    if (this.audio) {
+      this.audio.stopWithFade('roar', fadeDuration);
+    }
+    if (this.effects) {
+      this.effects.setEyeGlowIntensity(1.0);
+    }
+  }
+
   triggerRoar() {
     if (this.state === DragonState.ROARING || this.state === DragonState.FIRE_BREATHING) {
       return;
@@ -377,21 +432,8 @@ export class DragonScene {
 
     this.state = DragonState.ROARING;
     this.stateTimer = 0;
-
-    // Synchronize roar audio as mouth begins opening (~200ms)
-    setTimeout(() => {
-      if (this.audio && this.state === DragonState.ROARING) {
-        this.audio.play('roar', { volume: 1.0 });
-      }
-    }, 200);
-
-    if (this.effects) {
-      this.effects.triggerCameraShake(0.22, 1.2);
-      this.effects.setEyeGlowIntensity(2.6);
-      setTimeout(() => {
-        if (this.effects) this.effects.setEyeGlowIntensity(1.0);
-      }, 2400);
-    }
+    // Roar audio triggers automatically once jaw movement continues for >= 0.2s
+    // and continues until jaw movement stops.
   }
 
   triggerGrowl() {
@@ -432,6 +474,16 @@ export class DragonScene {
   updateAnimationStates(delta) {
     if (this.actionCooldown > 0) {
       this.actionCooldown -= delta;
+    }
+
+    // Automatic organic roar scheduler during continuous flight
+    if (this.state === DragonState.FLYING) {
+      this.autoRoarTimer += delta;
+      if (this.autoRoarTimer >= this.nextAutoRoarInterval) {
+        this.autoRoarTimer = 0;
+        this.nextAutoRoarInterval = this.getRandomAutoRoarInterval();
+        this.triggerRoar();
+      }
     }
 
     switch (this.state) {
@@ -540,6 +592,45 @@ export class DragonScene {
     if (this.headBone && this.currentHeadPitchElev > 0.001) {
       this.headBone.rotation.y += this.currentHeadPitchElev * 0.15;
     }
+
+    // Sustained Jaw Movement Detection Mechanism:
+    // When jaw movement happens and continues till 0.2s and above, roar until jaw movement stops
+    const prevOpen = this.prevJawOpen;
+    const currOpen = this.currentJawOpen;
+    const jawVelocity = Math.abs(currOpen - prevOpen) / Math.max(delta, 0.001);
+
+    // Jaw is actively moving or open above resting threshold
+    const isJawMoving = (currOpen > this.jawRestThreshold || this.targetJawOpen > this.jawRestThreshold || jawVelocity > 0.04) && (this.state !== DragonState.FIRE_BREATHING);
+
+    if (isJawMoving) {
+      this.jawMovementDuration += delta;
+    } else {
+      this.jawMovementDuration = 0.0;
+    }
+
+    // 1. When jaw movement continues till 0.2 sec and above -> roar
+    if (
+      this.jawMovementDuration >= this.jawMovementThreshold &&
+      !this.isRoaringActive &&
+      this.state !== DragonState.FIRE_BREATHING
+    ) {
+      this.isRoaringActive = true;
+      this.hasTriggeredRoarForCurrentOpening = true;
+      this.triggerRoarAudio({ loop: true });
+    }
+
+    // 2. Roar until jaw movement stops (jaw closed back to natural rest position)
+    if (!isJawMoving && this.isRoaringActive) {
+      this.isRoaringActive = false;
+      this.stopRoarAudio(0.25);
+    }
+
+    // Reset single-trigger lock when jaw is fully at rest
+    if (currOpen < this.jawRestThreshold && !isJawMoving) {
+      this.hasTriggeredRoarForCurrentOpening = false;
+    }
+
+    this.prevJawOpen = currOpen;
   }
 
   updateTextBehindOcclusion() {

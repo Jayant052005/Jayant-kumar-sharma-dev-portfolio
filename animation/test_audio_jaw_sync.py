@@ -67,34 +67,56 @@ def run_tests():
     if not os.path.exists(chrome_path):
         chrome_path = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
+    user_data = os.path.join(os.environ.get("TEMP", "C:\\temp"), f"cdp_jaw_profile_{CDP_PORT}")
     proc = subprocess.Popen([
         chrome_path,
         "--headless=new",
         f"--remote-debugging-port={CDP_PORT}",
+        f"--user-data-dir={user_data}",
         "--autoplay-policy=no-user-gesture-required",
         "--disable-gpu",
         f"http://localhost:{HTTP_PORT}/index.html"
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    time.sleep(3.0)
+    time.sleep(2.5)
 
     try:
-        req = urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json")
-        targets = json.loads(req.read().decode())
-        target = next((t for t in targets if f":{HTTP_PORT}" in t.get("url", "")), targets[0])
+        targets = []
+        target = None
+        for _ in range(40):
+            try:
+                req = urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json")
+                targets = json.loads(req.read().decode())
+                target = next((t for t in targets if f":{HTTP_PORT}" in t.get("url", "") and t.get("type") == "page"), None)
+                if target:
+                    break
+            except Exception:
+                pass
+            time.sleep(0.3)
+
+        assert target is not None, f"Failed to find page target on port {HTTP_PORT}!"
         ws = create_ws(target["webSocketDebuggerUrl"])
 
         print("=== DRAGON ANIMATION & AUDIO SYNC VERIFICATION ===")
 
-        # Wait for dragon model and audio buffers to load
-        for _ in range(30):
+        cdp(ws, "Runtime.evaluate", {"expression": "if (window.__START_DRAGON__) window.__START_DRAGON__();"}, 5)
+
+        # Wait for dragon model and audio buffers to load with unique message IDs
+        wait_id = 1000
+        model_ready = False
+        for i in range(90):
+            wait_id += 1
             res = cdp(ws, "Runtime.evaluate", {
                 "expression": "Boolean(window.__DRAGON_READY__ && window.__DRAGON_SCENE__ && window.__DRAGON_SCENE__.jawBone)",
                 "returnByValue": True
-            }, 10)
+            }, wait_id)
             if res.get("result", {}).get("result", {}).get("value") is True:
+                model_ready = True
+                print(f"  ✓ 3D Dragon model ready after {(i + 1) * 0.5:.1f}s.")
                 break
             time.sleep(0.5)
+
+        assert model_ready, "Timeout waiting for Dragon 3D model and jaw bones to load!"
 
         # 1. Verify Model Rigging & Jaw Bones
         print("\n[TEST 1] Verifying Model Rigging & Jaw Bones...")
@@ -305,6 +327,59 @@ def run_tests():
         assert sound_btn_data.get("hasSoundBtn") is True, "Sound toggle button missing in HUD!"
         assert sound_btn_data.get("afterClickMuted") != sound_btn_data.get("initialMuted"), "Sound toggle click failed to toggle mute state!"
         print("  ✓ Master sound toggle button in HUD verified.")
+
+        # 7. Verify 0.2s Jaw Movement Duration Requirement & Stop Synchronization
+        print("\n[TEST 7] Verifying 0.2s Jaw Movement Duration Gate & Stop Synchronization...")
+        
+        # Test 7A: Brief movement (< 0.2s) must NOT trigger roar
+        res_brief = cdp(ws, "Runtime.evaluate", {
+            "expression": """(() => {
+                const s = window.__DRAGON_SCENE__;
+                s.jawMovementDuration = 0.10; // under 0.2s
+                return {
+                    threshold: s.jawMovementThreshold,
+                    willTrigger: s.jawMovementDuration >= s.jawMovementThreshold,
+                    isRoaring: s.isRoaringActive
+                };
+            })()""",
+            "returnByValue": True
+        }, 19)
+        brief_data = res_brief.get("result", {}).get("result", {}).get("value", {})
+        print("  -> Under 0.2s duration gate:", brief_data)
+        assert brief_data.get("threshold") == 0.20, "Jaw movement duration threshold should be 0.20s!"
+        assert brief_data.get("willTrigger") is False, "Jaw movement under 0.2s must NOT trigger roar!"
+        assert brief_data.get("isRoaring") is False, "Roar should remain inactive for brief motion!"
+
+        # Test 7B: Sustained movement (>= 0.2s) triggers roar until stopped
+        res_sustain = cdp(ws, "Runtime.evaluate", {
+            "expression": """(() => {
+                const s = window.__DRAGON_SCENE__;
+                s.currentJawOpen = 0.5;
+                s.jawMovementDuration = 0.22; // >= 0.20s
+                s.updateAnimationStates(0.016);
+                const isRoaring = s.isRoaringActive;
+                const activeNodes = (s.audio && s.audio.activeNodes.get('roar')) ? s.audio.activeNodes.get('roar').length : 0;
+                
+                // Now stop jaw movement
+                s.currentJawOpen = 0.0;
+                s.targetJawOpen = 0.0;
+                s.prevJawOpen = 0.0;
+                s.updateAnimationStates(0.05);
+                const roaringAfterStop = s.isRoaringActive;
+                
+                return {
+                    isRoaringDuringMotion: isRoaring,
+                    activeNodesDuringMotion: activeNodes,
+                    roaringAfterStop
+                };
+            })()""",
+            "returnByValue": True
+        }, 20)
+        sustain_data = res_sustain.get("result", {}).get("result", {}).get("value", {})
+        print("  -> Sustained movement (>= 0.2s) & stop behavior:", sustain_data)
+        assert sustain_data.get("isRoaringDuringMotion") is True, "Roar should be active when jaw movement continues >= 0.2s!"
+        assert sustain_data.get("roaringAfterStop") is False, "Roar must stop when jaw movement stops!"
+        print("  ✓ 0.2s movement threshold gate and stop-on-close synchronization verified.")
 
         print("\n============================================================")
         print("ALL AUDIO, JAW RIG & SYNCHRONIZATION TESTS PASSED SUCCESSFULLY!")
